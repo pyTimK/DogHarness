@@ -1,6 +1,8 @@
+import 'package:bluetooth_app_test/change_notifiers/bluetoothData.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:provider/provider.dart';
 
 class BluetoothDevicesBottomSheet extends StatefulWidget {
   const BluetoothDevicesBottomSheet({super.key});
@@ -12,52 +14,26 @@ class BluetoothDevicesBottomSheet extends StatefulWidget {
 
 class _BluetoothDevicesBottomSheetState
     extends State<BluetoothDevicesBottomSheet> {
-  List<BluetoothDevice> connectedDevices = [];
-  FlutterBlue flutterBlue = FlutterBlue.instance;
-
-  // init
+  BluetoothData? _bluetoothData;
+  //init
   @override
   void initState() {
     super.initState();
-    _refreshConnectedDevices();
+    _bluetoothData = Provider.of<BluetoothData>(context, listen: false);
+    _bluetoothData?.startScanning();
   }
 
-  _refreshConnectedDevices() async {
-    var connectedDevices = await flutterBlue.connectedDevices;
-    setState(() {
-      this.connectedDevices = connectedDevices;
-    });
-  }
-
-  void _connectToDevice(BluetoothDevice device) async {
-    await device.connect();
-    setState(() {
-      connectedDevices = connectedDevices + [device];
-    });
-  }
-
-  void _disconnectFromDevice(BluetoothDevice device) async {
-    await device.disconnect();
-    setState(() {
-      connectedDevices =
-          connectedDevices.where((element) => element != device).toList();
-    });
-  }
-
-  void _displayBlootoothDevices() async {
-    logger.wtf(await flutterBlue.connectedDevices);
-  }
-
-  void _scanBluetoothDevices() async {
-    if (await flutterBlue.isScanning.first) {
-      return;
-    }
-    flutterBlue.startScan(timeout: const Duration(seconds: 10));
+  //dispose
+  @override
+  void dispose() {
+    _bluetoothData?.stopScanning();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _scanBluetoothDevices();
+    var bluetoothData = Provider.of<BluetoothData>(context);
+    var connectedDevices = bluetoothData.connectedDevices;
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -78,7 +54,8 @@ class _BluetoothDevicesBottomSheetState
                     subtitle: Text(device.id.toString()),
                     trailing: ElevatedButton(
                       child: const Text('Disconnect'),
-                      onPressed: () => _disconnectFromDevice(device),
+                      onPressed: () =>
+                          bluetoothData.disconnectFromDevice(device),
                     ),
                   );
                 },
@@ -108,7 +85,8 @@ class _BluetoothDevicesBottomSheetState
                               subtitle: Text(r.device.id.toString()),
                               trailing: ElevatedButton(
                                 child: const Text('Connect'),
-                                onPressed: () => _connectToDevice(r.device),
+                                onPressed: () =>
+                                    bluetoothData.connectToDevice(r.device),
                               ),
                             );
                           });
