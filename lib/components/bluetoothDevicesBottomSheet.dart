@@ -37,10 +37,12 @@ class _BluetoothDevicesBottomSheetState
 
     return Container(
       padding: const EdgeInsets.all(12),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: ListView(
+        shrinkWrap: true,
         children: [
-          const Text('Bluetooth Devices', style: TextStyle(fontSize: 20)),
+          const Center(
+            child: Text('Bluetooth Devices', style: TextStyle(fontSize: 20)),
+          ),
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -85,8 +87,12 @@ class _BluetoothDevicesBottomSheetState
                               subtitle: Text(r.device.id.toString()),
                               trailing: ElevatedButton(
                                 child: const Text('Connect'),
-                                onPressed: () =>
-                                    bluetoothData.connectToDevice(r.device),
+                                onPressed: () async {
+                                  await bluetoothData.connectToDevice(r.device);
+                                  if (mounted) {
+                                    Navigator.pop(context);
+                                  }
+                                },
                               ),
                             );
                           });

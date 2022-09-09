@@ -41,6 +41,7 @@ dependencies:
   logger: ^1.1.0
   app_settings: ^4.1.8
   provider: ^6.0.3
+  shared_preferences: ^2.0.15
 
 dev_dependencies:
   flutter_test:
