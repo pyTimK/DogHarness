@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/services/storage/shared_preferences_service.dart';
 import 'package:bluetooth_app_test/services/storage/storage_service.dart';
@@ -6,9 +8,23 @@ import 'package:flutter_blue/flutter_blue.dart';
 
 FlutterBlue flutterBlue = FlutterBlue.instance;
 
+class DataObject {
+  DataObject(
+    this.data,
+    this.datetime,
+  );
+
+  DataObject.now(this.data) : datetime = DateTime.now();
+
+  final String data;
+  final DateTime datetime;
+}
+
 class BluetoothData extends ChangeNotifier {
   BluetoothData() {
-    refreshConnectedDevices();
+    refreshConnectedDevices().then((_) {
+      _getCharacteristics();
+    });
     refreshSteps();
   }
 
@@ -17,14 +33,28 @@ class BluetoothData extends ChangeNotifier {
 
   // internals
   List<BluetoothDevice> _connectedDevices = [];
-  List<String> _dataStream = [];
+  final List<DataObject> _dataStream = [];
+  BluetoothCharacteristic? _notifiableCharacteristic;
+  BluetoothCharacteristic? _writableCharacteristic;
   bool _isListening = false;
   int _steps = 0;
 
   // getters
   List<BluetoothDevice> get connectedDevices => _connectedDevices;
-  List<String> get dataStream => _dataStream;
+  List<DataObject> get dataStream => _dataStream;
+  BluetoothCharacteristic? get notifiableCharacteristic => _notifiableCharacteristic;
+  BluetoothCharacteristic? get writableCharacteristic => _writableCharacteristic;
+  bool get isListening => _isListening;
   int get steps => _steps;
+
+  BluetoothDevice? get connectedDevice {
+    if (_connectedDevices.isEmpty) {
+      return null;
+    }
+    return _connectedDevices.first;
+  }
+
+  bool get isConnected => _connectedDevices.isNotEmpty;
 
   Future<List<BluetoothService>> get services async {
     if (_connectedDevices.isEmpty) {
@@ -35,7 +65,48 @@ class BluetoothData extends ChangeNotifier {
     return await device.discoverServices();
   }
 
-  // methods
+  // private methods
+  //! CHARACTERISTICS
+  _getCharacteristics() async {
+    if (connectedDevice == null) {
+      return;
+    }
+    logger.wtf("dito");
+
+    List<BluetoothService> awaitedServices = await services;
+
+    // get the notifiable characteristic
+    for (BluetoothService service in awaitedServices) {
+      if (_notifiableCharacteristic != null) {
+        break;
+      }
+
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        if (characteristic.properties.notify) {
+          _notifiableCharacteristic = characteristic;
+          await listen();
+          break;
+        }
+      }
+    }
+
+    // get the writable characteristic
+    for (BluetoothService service in awaitedServices) {
+      if (_writableCharacteristic != null) {
+        break;
+      }
+
+      for (BluetoothCharacteristic characteristic in service.characteristics) {
+        if (characteristic.properties.write) {
+          _writableCharacteristic = characteristic;
+          break;
+        }
+      }
+    }
+  }
+
+  // public methods
+  //! CONNECTED DEVICES
   Future<void> refreshConnectedDevices() async {
     _connectedDevices = await flutterBlue.connectedDevices;
     notifyListeners();
@@ -44,6 +115,7 @@ class BluetoothData extends ChangeNotifier {
   Future<void> connectToDevice(BluetoothDevice device) async {
     await device.connect();
     _connectedDevices.add(device);
+    await _getCharacteristics();
     notifyListeners();
   }
 
@@ -69,15 +141,18 @@ class BluetoothData extends ChangeNotifier {
     }
   }
 
-  Future<void> listen(BluetoothCharacteristic characteristic) async {
-    if (_isListening) {
+  //! NOTIFIABLE CHARACTERISTIC
+  Future<void> listen() async {
+    if (_isListening || _notifiableCharacteristic == null) {
       return;
     }
+
+    var characteristic = _notifiableCharacteristic!;
 
     await characteristic.setNotifyValue(true);
     characteristic.value.listen((data) {
       var ascii = String.fromCharCodes(data).trim();
-      _dataStream.add(ascii);
+      _dataStream.add(DataObject.now(ascii));
       _handleData(ascii);
       logger.d(ascii);
       notifyListeners();
@@ -104,6 +179,22 @@ class BluetoothData extends ChangeNotifier {
       default:
         break;
     }
+  }
+
+  //! WRITABLE CHARACTERISTIC
+  Future<void> write(String data) async {
+    if (_writableCharacteristic == null) {
+      try {
+        await _getCharacteristics();
+      } catch (e) {
+        logger.e(e);
+        return;
+      }
+    }
+
+    var characteristic = _writableCharacteristic!;
+
+    await characteristic.write(utf8.encode(data));
   }
 
   //! STEPS

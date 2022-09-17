@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "440800884304",
+    "project_id": "dogt-app",
+    "storage_bucket": "dogt-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:440800884304:android:6b18de199cbafcb6e1c355",
+        "android_client_info": {
+          "package_name": "com.example.bluetooth_app_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "440800884304-6kjht4jnjm60n9pts8tlik1jk37o4pu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBD3K6X_klxF74mdYRLCqtNV18Abpw09ps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "440800884304-6kjht4jnjm60n9pts8tlik1jk37o4pu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
