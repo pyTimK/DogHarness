@@ -8,12 +8,10 @@ class BluetoothDevicesBottomSheet extends StatefulWidget {
   const BluetoothDevicesBottomSheet({super.key});
 
   @override
-  State<BluetoothDevicesBottomSheet> createState() =>
-      _BluetoothDevicesBottomSheetState();
+  State<BluetoothDevicesBottomSheet> createState() => _BluetoothDevicesBottomSheetState();
 }
 
-class _BluetoothDevicesBottomSheetState
-    extends State<BluetoothDevicesBottomSheet> {
+class _BluetoothDevicesBottomSheetState extends State<BluetoothDevicesBottomSheet> {
   BluetoothData? _bluetoothData;
   //init
   @override
@@ -56,8 +54,7 @@ class _BluetoothDevicesBottomSheetState
                     subtitle: Text(device.id.toString()),
                     trailing: ElevatedButton(
                       child: const Text('Disconnect'),
-                      onPressed: () =>
-                          bluetoothData.disconnectFromDevice(device),
+                      onPressed: () => bluetoothData.disconnectFromDevice(device),
                     ),
                   );
                 },
@@ -69,14 +66,12 @@ class _BluetoothDevicesBottomSheetState
                   shrinkWrap: true,
                   children: snapshot.data!.map(
                     (r) {
-                      String deviceName =
-                          r.device.name.isNotEmpty ? r.device.name : 'Unknown';
+                      String deviceName = r.device.name.isNotEmpty ? r.device.name : 'Unknown';
                       return StreamBuilder<BluetoothDeviceState>(
                           stream: r.device.state,
                           initialData: BluetoothDeviceState.disconnected,
                           builder: (c, snapshot) {
-                            bool isConnected =
-                                snapshot.data == BluetoothDeviceState.connected;
+                            bool isConnected = snapshot.data == BluetoothDeviceState.connected;
 
                             if (isConnected) {
                               return const SizedBox.shrink();

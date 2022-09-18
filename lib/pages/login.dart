@@ -105,6 +105,7 @@ class _LogInPageState extends State<LogInPage> {
               TextFormField(
                 controller: _emailController,
                 decoration: MyStyles.myInputDecoration("Email"),
+                style: MyStyles.h2,
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter your email";
@@ -121,6 +122,7 @@ class _LogInPageState extends State<LogInPage> {
               TextFormField(
                 controller: _passwordController,
                 decoration: MyStyles.myInputDecoration("Password"),
+                style: MyStyles.h2,
                 validator: (String? value) {
                   if (value == null || value.isEmpty) {
                     return "Please enter your password";

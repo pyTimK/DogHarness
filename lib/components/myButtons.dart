@@ -8,6 +8,7 @@ class MyButton extends StatelessWidget {
     this.color = MyStyles.dark,
     required this.onPressed,
     this.labelColor = MyStyles.white,
+    this.dense = false,
     super.key,
   })  : shrink = false,
         outline = false,
@@ -20,6 +21,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.labelColor = MyStyles.white,
     required this.icon,
+    this.dense = false,
     super.key,
   })  : shrink = false,
         outline = false,
@@ -30,6 +32,7 @@ class MyButton extends StatelessWidget {
     this.color = MyStyles.dark,
     required this.onPressed,
     this.labelColor = MyStyles.white,
+    this.dense = false,
     super.key,
   })  : shrink = true,
         outline = false,
@@ -41,6 +44,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
+    this.dense = false,
     super.key,
   })  : color = null,
         shrink = false,
@@ -52,6 +56,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
+    this.dense = false,
     super.key,
   })  : color = null,
         shrink = true,
@@ -64,6 +69,7 @@ class MyButton extends StatelessWidget {
     required this.icon,
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
+    this.dense = false,
     super.key,
   })  : color = null,
         shrink = false,
@@ -77,6 +83,7 @@ class MyButton extends StatelessWidget {
   final bool outline;
   final Color? outlineColor;
   final Widget? icon;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
@@ -89,6 +96,7 @@ class MyButton extends StatelessWidget {
       outline: outline,
       outlineColor: outlineColor,
       icon: icon,
+      dense: dense,
     );
 
     if (shrink) {
@@ -112,6 +120,7 @@ class _MyButtonShrinked extends StatelessWidget {
     required this.outline,
     required this.outlineColor,
     required this.icon,
+    required this.dense,
     super.key,
   });
   final void Function() onPressed;
@@ -122,12 +131,13 @@ class _MyButtonShrinked extends StatelessWidget {
   final bool outline;
   final Color? outlineColor;
   final Widget? icon;
+  final bool dense;
 
   @override
   Widget build(BuildContext context) {
     var buttonStyle = ButtonStyle(
       backgroundColor: MaterialStateProperty.all(outline ? Colors.transparent : color ?? MyStyles.dark),
-      padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: shrink ? 10 : 20, horizontal: 35)),
+      padding: MaterialStateProperty.all(EdgeInsets.symmetric(vertical: (shrink || dense) ? 10 : 20, horizontal: 35)),
       shape: MaterialStateProperty.all(RoundedRectangleBorder(
           borderRadius: const BorderRadius.all(Radius.circular(50)),
           side: outline ? BorderSide(color: outlineColor ?? MyStyles.dark) : BorderSide.none)),
@@ -144,7 +154,7 @@ class _MyButtonShrinked extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             Transform.translate(
-              offset: const Offset(-10, 0),
+              offset: Offset(dense ? -20 : -10, 0),
               child: Align(alignment: Alignment.centerLeft, child: icon!),
             ),
             Align(alignment: Alignment.center, child: labelWidget)

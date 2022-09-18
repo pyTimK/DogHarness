@@ -67,37 +67,40 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
-    return Transform.translate(
-      offset: const Offset(0, -100),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            "assets/svg/mail-sent.svg",
-            height: 175,
-          ),
-          const SizedBox(height: 30),
-          const Text(
-            'Verify your email',
-            style: MyStyles.h1,
-          ),
-          const SizedBox(height: 5),
-          Text(
-            'We have sent an email to ${user.email}. Please click on the link to verify your email address.',
-            textAlign: TextAlign.center,
-            style: MyStyles.p,
-          ),
-          const SizedBox(height: 30),
-          const Text("Different Email?", style: MyStyles.p),
-          const SizedBox(height: 5),
-          MyButton.outlineShrink(
-            label: "Change Email",
-            onPressed: () {
-              FirebaseAuth.instance.signOut();
-            },
-          )
-        ],
+    return SizedBox(
+      height: MediaQuery.of(context).size.height - MediaQuery.of(context).viewPadding.top,
+      child: Transform.translate(
+        offset: const Offset(0, -100),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SvgPicture.asset(
+              "assets/svg/mail-sent.svg",
+              height: 175,
+            ),
+            const SizedBox(height: 30),
+            const Text(
+              'Verify your email',
+              style: MyStyles.h1,
+            ),
+            const SizedBox(height: 5),
+            Text(
+              'We have sent an email to ${user.email}. Please click on the link to verify your email address.',
+              textAlign: TextAlign.center,
+              style: MyStyles.p,
+            ),
+            const SizedBox(height: 30),
+            const Text("Different Email?", style: MyStyles.p),
+            const SizedBox(height: 5),
+            MyButton.outlineShrink(
+              label: "Change Email",
+              onPressed: () {
+                FirebaseAuth.instance.signOut();
+              },
+            )
+          ],
+        ),
       ),
     );
   }

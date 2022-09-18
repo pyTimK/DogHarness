@@ -21,3 +21,7 @@ final DateFormat _timeFormatter = DateFormat('HH:mm:ss');
 String getFomrattedTime(DateTime datetime) {
   return _timeFormatter.format(datetime);
 }
+
+String getFormattedDate(DateTime datetime) {
+  return DateFormat('dd/MM/yyyy').format(datetime);
+}
