@@ -1,17 +1,19 @@
 class Owner {
   Owner({
-    this.id,
+    required this.id,
     required this.nickname,
     required this.email,
     this.photoUrl,
     required this.dogIds,
+    required this.defaultDogId,
   });
 
-  String? id;
+  String id;
   String nickname;
   String email;
   String? photoUrl;
   List<String> dogIds;
+  String defaultDogId;
 
   factory Owner.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {
@@ -23,6 +25,7 @@ class Owner {
       email: data['email'] ?? '',
       photoUrl: data['photoUrl'],
       dogIds: List<String>.from(data['dogIds'] ?? []),
+      defaultDogId: data['defaultDogId'] ?? '',
     );
   }
 
@@ -32,6 +35,7 @@ class Owner {
       'email': email,
       'photoUrl': photoUrl,
       'dogIds': dogIds,
+      'defaultDogId': defaultDogId,
     };
   }
 }

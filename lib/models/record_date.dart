@@ -1,13 +1,13 @@
 class RecordDate {
   RecordDate({
-    this.id,
+    required this.id,
     required this.numSteps,
     required this.numDistance,
     required this.avePulse,
     required this.aveBreath,
   });
 
-  String? id;
+  String id;
   int numSteps;
   int numDistance;
   int avePulse;

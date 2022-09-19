@@ -1,6 +1,9 @@
 import 'package:bluetooth_app_test/components/bouncing.dart';
+import 'package:bluetooth_app_test/enums/button_state.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class MyButton extends StatelessWidget {
   const MyButton({
@@ -9,6 +12,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.labelColor = MyStyles.white,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : shrink = false,
         outline = false,
@@ -22,6 +26,7 @@ class MyButton extends StatelessWidget {
     this.labelColor = MyStyles.white,
     required this.icon,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : shrink = false,
         outline = false,
@@ -33,6 +38,7 @@ class MyButton extends StatelessWidget {
     required this.onPressed,
     this.labelColor = MyStyles.white,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : shrink = true,
         outline = false,
@@ -45,6 +51,7 @@ class MyButton extends StatelessWidget {
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : color = null,
         shrink = false,
@@ -57,6 +64,7 @@ class MyButton extends StatelessWidget {
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : color = null,
         shrink = true,
@@ -70,6 +78,7 @@ class MyButton extends StatelessWidget {
     this.labelColor = MyStyles.dark,
     this.outlineColor = MyStyles.dark,
     this.dense = false,
+    this.state = ButtonState.enabled,
     super.key,
   })  : color = null,
         shrink = false,
@@ -84,54 +93,7 @@ class MyButton extends StatelessWidget {
   final Color? outlineColor;
   final Widget? icon;
   final bool dense;
-
-  @override
-  Widget build(BuildContext context) {
-    var shrinkedButton = _MyButtonShrinked(
-      onPressed: onPressed,
-      color: color,
-      label: label,
-      labelColor: labelColor,
-      shrink: shrink,
-      outline: outline,
-      outlineColor: outlineColor,
-      icon: icon,
-      dense: dense,
-    );
-
-    if (shrink) {
-      return shrinkedButton;
-    }
-
-    return SizedBox(
-      width: double.infinity,
-      child: shrinkedButton,
-    );
-  }
-}
-
-class _MyButtonShrinked extends StatelessWidget {
-  const _MyButtonShrinked({
-    required this.onPressed,
-    required this.color,
-    required this.label,
-    required this.labelColor,
-    required this.shrink,
-    required this.outline,
-    required this.outlineColor,
-    required this.icon,
-    required this.dense,
-    super.key,
-  });
-  final void Function() onPressed;
-  final Color? color;
-  final String label;
-  final Color labelColor;
-  final bool shrink;
-  final bool outline;
-  final Color? outlineColor;
-  final Widget? icon;
-  final bool dense;
+  final ButtonState state;
 
   @override
   Widget build(BuildContext context) {
@@ -144,29 +106,41 @@ class _MyButtonShrinked extends StatelessWidget {
       overlayColor: MaterialStateProperty.all(outline ? MyStyles.dark10 : MyStyles.white10),
     );
 
-    var labelWidget = Text(label, style: MyStyles.h3.colour(labelColor));
+    Text labelWidget = Text(state == ButtonState.loading ? "" : label, style: MyStyles.h3.colour(labelColor));
 
-    if (icon != null) {
-      return TextButton(
-        onPressed: onPressed,
-        style: buttonStyle,
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            Transform.translate(
-              offset: Offset(dense ? -20 : -10, 0),
-              child: Align(alignment: Alignment.centerLeft, child: icon!),
+    Widget textButton = icon == null
+        ? TextButton(
+            style: buttonStyle,
+            onPressed: state != ButtonState.enabled ? null : onPressed,
+            child: labelWidget,
+          )
+        : TextButton(
+            onPressed: onPressed,
+            style: buttonStyle,
+            child: Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                Transform.translate(
+                  offset: Offset(dense ? -20 : -10, 0),
+                  child: Align(alignment: Alignment.centerLeft, child: icon!),
+                ),
+                Align(alignment: Alignment.center, child: labelWidget)
+              ],
             ),
-            Align(alignment: Alignment.center, child: labelWidget)
-          ],
-        ),
-      );
-    }
+          );
 
-    return TextButton(
-      style: buttonStyle,
-      onPressed: onPressed,
-      child: labelWidget,
+    textButton = shrink ? textButton : SizedBox(width: double.infinity, child: textButton);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        textButton,
+        if (state == ButtonState.loading)
+          LoadingAnimationWidget.staggeredDotsWave(
+            color: outline ? MyStyles.dark : MyStyles.white,
+            size: shrink ? 15 : 30,
+          ),
+      ],
     );
   }
 }

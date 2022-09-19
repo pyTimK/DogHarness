@@ -67,7 +67,8 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   @override
   Widget build(BuildContext context) {
     var user = Provider.of<User>(context);
-    return SizedBox(
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
       height: MediaQuery.of(context).size.height - MediaQuery.of(context).viewPadding.top,
       child: Transform.translate(
         offset: const Offset(0, -100),

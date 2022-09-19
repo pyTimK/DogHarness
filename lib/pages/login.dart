@@ -84,128 +84,132 @@ class _LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Transform.translate(
-          offset: const Offset(0, -20),
-          child: Image.asset(
-            "assets/icon/icon-transparent.png",
-            height: 176,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        children: [
+          Transform.translate(
+            offset: const Offset(0, -20),
+            child: Image.asset(
+              "assets/icon/icon-transparent.png",
+              height: 176,
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        const Text(Constants.appName, style: MyStyles.h1),
-        const SizedBox(height: 5),
-        const Text("Welcome Dog Lover!", style: MyStyles.p),
-        const SizedBox(height: 55),
-        Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: MyStyles.myInputDecoration("Email"),
-                style: MyStyles.h2,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your email";
-                  }
-
-                  if (!isEmail(value)) {
-                    return "Please enter a valid email";
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
-              TextFormField(
-                controller: _passwordController,
-                decoration: MyStyles.myInputDecoration("Password"),
-                style: MyStyles.h2,
-                validator: (String? value) {
-                  if (value == null || value.isEmpty) {
-                    return "Please enter your password";
-                  }
-
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
-              MyButton(
-                label: _pageType == _LogInPageType.login ? "LOGIN" : "SIGN UP",
-                onPressed: () {
-                  if (_formKey.currentState != null && _formKey.currentState!.validate()) {
-                    if (_pageType == _LogInPageType.login) {
-                      _login(_emailController.text, _passwordController.text);
-                    } else {
-                      _signup(_emailController.text, _passwordController.text);
+          const SizedBox(height: 10),
+          const Text(Constants.appName, style: MyStyles.h1),
+          const SizedBox(height: 5),
+          const Text("Welcome Dog Lover!", style: MyStyles.p),
+          const SizedBox(height: 55),
+          Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                TextFormField(
+                  controller: _emailController,
+                  decoration: MyStyles.myInputDecoration("Email"),
+                  style: MyStyles.h2,
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your email";
                     }
-                  }
-                },
-              ),
-              // const SizedBox(height: 20),
-              // MyButton.outline(
-              //   label: "DONE WALKING",
-              //   onPressed: () {},
-              //   outlineColor: MyStyles.red,
-              //   labelColor: MyStyles.red,
-              // ),
-              // const SizedBox(height: 20),
-              // MyButton.shrink(
-              //   label: "Turn On",
-              //   onPressed: () {},
-              // ),
-              // const SizedBox(height: 20),
-              // MyButton.outlineShrink(
-              //   label: "Cancel",
-              //   onPressed: () {},
-              // ),
-              // const SizedBox(height: 20),
-              // MyButton.shrink(
-              //   label: "SIGN OUT",
-              //   onPressed: () {},
-              //   color: MyStyles.red,
-              // ),
-              // const SizedBox(height: 20),
-              // MyButton.shrink(
-              //   label: "ADD",
-              //   onPressed: () {},
-              //   color: MyStyles.green,
-              // ),
-              // const SizedBox(height: 20),
-              // MyButton.icon(
-              //   label: "SHARE DOG",
-              //   icon: SvgPicture.asset(
-              //     "assets/svg/share-outline.svg",
-              //     color: Colors.white,
-              //   ),
-              //   color: MyStyles.blue,
-              //   onPressed: () {},
-              // ),
-            ],
+
+                    if (!isEmail(value)) {
+                      return "Please enter a valid email";
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 25),
+                TextFormField(
+                  //TODO: Dont show password plain text
+                  controller: _passwordController,
+                  decoration: MyStyles.myInputDecoration("Password"),
+                  style: MyStyles.h2,
+                  validator: (String? value) {
+                    if (value == null || value.isEmpty) {
+                      return "Please enter your password";
+                    }
+
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 25),
+                MyButton(
+                  label: _pageType == _LogInPageType.login ? "LOGIN" : "SIGN UP",
+                  onPressed: () {
+                    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+                      if (_pageType == _LogInPageType.login) {
+                        _login(_emailController.text, _passwordController.text);
+                      } else {
+                        _signup(_emailController.text, _passwordController.text);
+                      }
+                    }
+                  },
+                ),
+                // const SizedBox(height: 20),
+                // MyButton.outline(
+                //   label: "DONE WALKING",
+                //   onPressed: () {},
+                //   outlineColor: MyStyles.red,
+                //   labelColor: MyStyles.red,
+                // ),
+                // const SizedBox(height: 20),
+                // MyButton.shrink(
+                //   label: "Turn On",
+                //   onPressed: () {},
+                // ),
+                // const SizedBox(height: 20),
+                // MyButton.outlineShrink(
+                //   label: "Cancel",
+                //   onPressed: () {},
+                // ),
+                // const SizedBox(height: 20),
+                // MyButton.shrink(
+                //   label: "SIGN OUT",
+                //   onPressed: () {},
+                //   color: MyStyles.red,
+                // ),
+                // const SizedBox(height: 20),
+                // MyButton.shrink(
+                //   label: "ADD",
+                //   onPressed: () {},
+                //   color: MyStyles.green,
+                // ),
+                // const SizedBox(height: 20),
+                // MyButton.icon(
+                //   label: "SHARE DOG",
+                //   icon: SvgPicture.asset(
+                //     "assets/svg/share-outline.svg",
+                //     color: Colors.white,
+                //   ),
+                //   color: MyStyles.blue,
+                //   onPressed: () {},
+                // ),
+              ],
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        const Text("OR", style: MyStyles.h3),
-        const SizedBox(height: 20),
-        MyButton.outlineIcon(
-          label: "SIGN IN WITH GOOGLE",
-          icon: Image.asset("assets/images/google-icon.png"),
-          onPressed: _signInWithGoogle,
-        ),
-        const SizedBox(height: 30),
-        const Text("Don't have an account?", style: MyStyles.p),
-        const SizedBox(height: 10),
-        MyButton.outlineShrink(
-          label: "SIGN UP",
-          onPressed: () {
-            setState(() {
-              _pageType = _pageType == _LogInPageType.login ? _LogInPageType.signup : _LogInPageType.login;
-            });
-          },
-        ),
-      ],
+          const SizedBox(height: 20),
+          const Text("OR", style: MyStyles.h3),
+          const SizedBox(height: 20),
+          MyButton.outlineIcon(
+            label: "SIGN IN WITH GOOGLE",
+            icon: Image.asset("assets/images/google-icon.png"),
+            onPressed: _signInWithGoogle,
+          ),
+          const SizedBox(height: 30),
+          const Text("Don't have an account?", style: MyStyles.p),
+          const SizedBox(height: 10),
+          MyButton.outlineShrink(
+            label: "SIGN UP",
+            onPressed: () {
+              setState(() {
+                _pageType = _pageType == _LogInPageType.login ? _LogInPageType.signup : _LogInPageType.login;
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 }

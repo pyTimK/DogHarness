@@ -1,4 +1,3 @@
-import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +15,7 @@ class MyDrowpdown<T> extends StatefulWidget {
   final List<DropdownMenuItem<T>> items;
   final String hint;
   final String label;
-  final String? Function(T? value) validator;
+  final FormFieldValidator<T> validator;
   final ValueChanged<T?>? onChanged;
 
   @override
@@ -28,8 +27,8 @@ class _MyDrowpdownState<T> extends State<MyDrowpdown<T>> {
 
   _setValue(T? value) {
     widget.onChanged?.call(value);
+    widget.controller.value = value;
     if (value != null) {
-      widget.controller.value = value;
       setState(() {
         _value = value;
       });
@@ -49,6 +48,7 @@ class _MyDrowpdownState<T> extends State<MyDrowpdown<T>> {
       elevation: 3,
       dropdownColor: MyStyles.white,
       validator: widget.validator,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
     );
   }
 }

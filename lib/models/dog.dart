@@ -64,9 +64,9 @@ class DogSize {
 
 class Dog {
   Dog({
-    this.id,
+    required this.id,
     required this.name,
-    required this.photoUrl,
+    this.photoUrl,
     required this.breed,
     required this.size,
     required this.birthday,
@@ -74,9 +74,9 @@ class Dog {
     this.humanIds = const [],
   });
 
-  String? id;
+  String id;
   String name;
-  String photoUrl;
+  String? photoUrl;
   DogBreed breed;
   DogSize size;
   DateTime birthday;

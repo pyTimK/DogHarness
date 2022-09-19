@@ -1,13 +1,19 @@
 import 'dart:io';
+import 'package:bluetooth_app_test/change_notifiers/registration_data.dart';
 import 'package:bluetooth_app_test/components/myAlertDialog.dart';
 import 'package:bluetooth_app_test/components/myButtons.dart';
+import 'package:bluetooth_app_test/components/myDayInput.dart';
 import 'package:bluetooth_app_test/components/myDropdown.dart';
+import 'package:bluetooth_app_test/components/myEditableAvatar.dart';
 import 'package:bluetooth_app_test/components/withEditButton.dart';
+import 'package:bluetooth_app_test/enums/button_state.dart';
 import 'package:bluetooth_app_test/functions/capture_image.dart';
 import 'package:bluetooth_app_test/functions/pick_image.dart';
-import 'package:bluetooth_app_test/functions/utils.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
+import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
+import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -22,106 +28,94 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
-  final TextEditingController _ownerNicknameController = TextEditingController();
-  final TextEditingController _dogNameController = TextEditingController();
-  final MyDropdownController<DogBreed> _dogBreedController = MyDropdownController();
-  final MyDropdownController<DogSize> _dogSizeController = MyDropdownController();
-  DateTime? _birthday;
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  File? _ownerImage;
-  File? _dogImage;
+  final _ownerNicknameController = TextEditingController();
+  final _dogNameController = TextEditingController();
+  final _dogBreedController = MyDropdownController<DogBreed>();
+  final _dogSizeController = MyDropdownController<DogSize>();
+  final _birthdayController = MyDayInputController();
+  final _ownerAvatarController = MyEditableAvatarController();
+  final _dogAvatarController = MyEditableAvatarController();
+  final _formKey = GlobalKey<FormState>();
 
-  Future<void> _updateImage(Future<File?> Function() getImage, {bool isOwner = true}) async {
-    final image = await getImage();
-    if (image != null && mounted) {
-      Navigator.pop(context);
+  var _continueButtonState = ButtonState.enabled;
+
+  void _setContinueButtonLoading(ButtonState state) {
+    if (mounted) {
       setState(() {
-        if (isOwner) {
-          _ownerImage = image;
-        } else {
-          _dogImage = image;
-        }
+        _continueButtonState = state;
       });
     }
-  }
-
-  _openChangePictureDialog({bool isOwner = true}) async {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return MyAlertDialog(
-          children: [
-            const Text("Change Owner Pic", style: MyStyles.h1),
-            const SizedBox(height: 20),
-            MyButton.outlineIcon(
-              icon: SvgPicture.asset("assets/svg/camera.svg", color: MyStyles.dark),
-              label: "USE CAMERA",
-              dense: true,
-              onPressed: () => _updateImage(captureImage, isOwner: isOwner),
-            ),
-            const SizedBox(height: 8),
-            const Text("OR", style: MyStyles.p),
-            const SizedBox(height: 8),
-            MyButton.outlineIcon(
-              icon: SvgPicture.asset("assets/svg/cloud-upload.svg", color: MyStyles.dark),
-              label: "UPLOAD IMAGE",
-              dense: true,
-              onPressed: () => _updateImage(pickImage, isOwner: isOwner),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   _openAddFriendsDogDialog() {
     //TODO
   }
 
-  _register() {
+  _register(User user, RegistrationData registrationData) async {
     if (_formKey.currentState!.validate()) {
-      final user = Provider.of<User>(context, listen: false);
-      final owner = Owner(
-        nickname: _ownerNicknameController.text,
-        email: user.email!,
-        photoUrl: user.photoURL,
-        dogIds: [],
-      );
+      logger.i("Registering user ${user.uid}...");
+      _setContinueButtonLoading(ButtonState.loading);
+      try {
+        // generate Ids
+        final ownerId = user.uid;
+        final dogId = CloudFirestoreService.generateDogId;
 
-      // final dog = Dog(
-      //   name: _dogNameController.text,
-      //   breed: _dogBreedController.value,
-      //   size: _dogSizeController.value,
-      //   birthday: _birthday,
-      //   owner: owner,
-      //   photoUrl: user.photoURL,
-      // );
-      //TODO: birthday validator
-      //TODO: call firestore register
-      //TODO: save profile images in firebase storage
-      //TODO: update owner/dog photoUrls in firestore
-    }
-  }
+        final ownerAvatar = _ownerAvatarController.value;
+        final dogAvatar = _dogAvatarController.value;
 
-  _showDatePicker() {
-    showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          _birthday = value;
-        });
+        logger.i("Owner Avatar is $ownerAvatar");
+        logger.i("Dog Avatar is $dogAvatar");
+
+        // Upload avatars
+        final ownerPhotoUrl = await FirebaseStorageService.uploadImage(id: ownerId, image: ownerAvatar);
+        final dogPhotoUrl = await FirebaseStorageService.uploadImage(id: dogId, image: dogAvatar, isOwner: false);
+
+        // Create Owner and Dog
+        final owner = Owner(
+          id: ownerId,
+          nickname: _ownerNicknameController.text,
+          email: user.email!,
+          dogIds: [dogId],
+          defaultDogId: dogId,
+          photoUrl: ownerPhotoUrl ?? user.photoURL,
+        );
+
+        final dog = Dog(
+          id: dogId,
+          name: _dogNameController.text,
+          breed: _dogBreedController.value!,
+          size: _dogSizeController.value!,
+          birthday: _birthdayController.value!,
+          ownerId: ownerId,
+          humanIds: [],
+          photoUrl: dogPhotoUrl,
+        );
+
+        // Save Owner and Dog
+        await CloudFirestoreService.register(owner, dog);
+        registrationData.isRegistered = true;
+        logger.i("Registered user ${user.uid}...");
+      } catch (e) {
+        logger.e(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: MyStyles.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
       }
-    });
+      _setContinueButtonLoading(ButtonState.enabled);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
+    final registrationData = Provider.of<RegistrationData>(context, listen: false);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 50),
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
       child: Form(
         key: _formKey,
         child: Column(
@@ -132,11 +126,9 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 50),
             const Text("OWNER", style: MyStyles.h2),
             const SizedBox(height: 35),
-            WithEditButton(
-              onEdit: _openChangePictureDialog,
-              child: _ownerImage == null
-                  ? SvgPicture.asset("assets/svg/owner-empty-avatar.svg", fit: BoxFit.cover)
-                  : Image.file(_ownerImage!, fit: BoxFit.cover),
+            MyEditableAvatar(
+              controller: _ownerAvatarController,
+              defaultImage: SvgPicture.asset("assets/svg/owner-empty-avatar.svg", fit: BoxFit.cover),
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -148,15 +140,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   return "Nickname cannot be empty";
                 }
               },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             const SizedBox(height: 60),
             const Text("DOG", style: MyStyles.h2),
             const SizedBox(height: 35),
-            WithEditButton(
-              onEdit: () => _openChangePictureDialog(isOwner: false),
-              child: _ownerImage == null
-                  ? SvgPicture.asset("assets/svg/dog-empty-avatar.svg", fit: BoxFit.cover)
-                  : Image.file(_dogImage!, fit: BoxFit.cover),
+            MyEditableAvatar(
+              controller: _dogAvatarController,
+              defaultImage: SvgPicture.asset("assets/svg/dog-empty-avatar.svg", fit: BoxFit.cover),
             ),
             const SizedBox(height: 20),
             TextFormField(
@@ -168,6 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   return "Name cannot be empty";
                 }
               },
+              autovalidateMode: AutovalidateMode.onUserInteraction,
             ),
             const SizedBox(height: 20),
             MyDrowpdown(
@@ -210,28 +202,14 @@ class _RegisterPageState extends State<RegisterPage> {
               },
             ),
             const SizedBox(height: 20),
-            GestureDetector(
-              onTap: _showDatePicker,
-              child: Container(
-                  width: double.infinity,
-                  height: 60,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: MyStyles.dark),
-                  ),
-                  alignment: Alignment.center,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _birthday == null
-                          ? Text("Birthday", style: MyStyles.h2.colour(MyStyles.dark60))
-                          : Text(getFormattedDate(_birthday!), style: MyStyles.h2),
-                      SvgPicture.asset(
-                        "assets/svg/calendar.svg",
-                      ),
-                    ],
-                  )),
+            MyDayInput(
+              controller: _birthdayController,
+              label: "Brithday",
+              validator: (DateTime? value) {
+                if (value == null) {
+                  return "Birthday cannot be empty";
+                }
+              },
             ),
             const SizedBox(height: 20),
             const Text("OR", style: MyStyles.h3),
@@ -242,8 +220,12 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 20),
             const Text("Note: You can add another dog later", style: MyStyles.p),
-            const SizedBox(height: 60),
-            MyButton(label: "CONTINUE", onPressed: _register),
+            const SizedBox(height: 20),
+            MyButton(
+              label: "CONTINUE",
+              state: _continueButtonState,
+              onPressed: () => _register(user, registrationData),
+            ),
           ],
         ),
       ),

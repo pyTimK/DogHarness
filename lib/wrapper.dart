@@ -1,4 +1,6 @@
-import 'package:bluetooth_app_test/change_notifiers/bluetoothData.dart';
+import 'package:bluetooth_app_test/change_notifiers/bluetooth_data.dart';
+import 'package:bluetooth_app_test/change_notifiers/account_data.dart';
+import 'package:bluetooth_app_test/change_notifiers/registration_data.dart';
 import 'package:bluetooth_app_test/home.dart';
 import 'package:bluetooth_app_test/main.dart';
 import 'package:bluetooth_app_test/pages/home.dart';
@@ -59,30 +61,30 @@ class _WrapperState extends State<Wrapper> {
               // shrinkWrap: true,
               // physics: const BouncingScrollPhysics(),
               children: [
-                Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 40),
-                    child: user == null
-                        ? const LogInPage()
-                        : Provider.value(
-                            value: user!,
-                            child: !user!.emailVerified
-                                ? const VerifyEmailPage()
-                                : FutureBuilder(
-                                    future: CloudFirestoreService.ownerExists(user!.uid),
-                                    builder: (context, AsyncSnapshot<bool> snapshot) {
-                                      if (!snapshot.hasData) {
-                                        return const Center(child: CircularProgressIndicator());
-                                      }
+                user == null
+                    ? const LogInPage()
+                    : Provider.value(
+                        value: user!,
+                        child: !user!.emailVerified
+                            ? const VerifyEmailPage()
+                            : ChangeNotifierProvider(
+                                create: (context) => RegistrationData(user!.uid),
+                                builder: (context, child) {
+                                  var registrationData = Provider.of<RegistrationData>(context);
+                                  if (registrationData.isRegistered == null) {
+                                    return const Center(child: CircularProgressIndicator());
+                                  }
 
-                                      var ownerExists = snapshot.data!;
-                                      if (!ownerExists) {
-                                        return const RegisterPage();
-                                      }
+                                  if (!registrationData.isRegistered!) {
+                                    return const RegisterPage();
+                                  }
 
-                                      return const HomePage();
-                                    },
-                                  ),
-                          ))
+                                  return MultiProvider(providers: [
+                                    ChangeNotifierProvider(create: (context) => AccountData(user!.uid)),
+                                  ], builder: (context, child) => const HomePage());
+                                },
+                              ),
+                      )
               ],
             ),
           ),

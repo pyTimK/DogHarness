@@ -71,6 +71,17 @@ abstract class CloudFirestoreService {
     return null;
   }
 
+  static Future<List<Dog>> getDogs(List<String> dogIds) async {
+    final dogs = <Dog>[];
+    for (final dogId in dogIds) {
+      final dog = await getDog(dogId);
+      if (dog != null) {
+        dogs.add(dog);
+      }
+    }
+    return dogs;
+  }
+
   //! Record
   static Future<String> addRecord(Record record) async {
     final docRef = await recordCollection.add(record.toMap());
@@ -165,20 +176,19 @@ abstract class CloudFirestoreService {
   //   });
   // }
 
-  static Future<void> register(Owner owner, Dog dog) {
-    final batch = db.batch();
-    final ownerRef = ownerCollection.doc();
-    final dogRef = dogCollection.doc();
-    final recordRef = recordCollection.doc(dogRef.id);
+  static String get generateOwnerId => ownerCollection.doc().id;
+  static String get generateDogId => dogCollection.doc().id;
 
-    owner.id = ownerRef.id;
-    owner.dogIds = [dogRef.id];
-    dog.id = dogRef.id;
-    dog.ownerId = ownerRef.id;
+  static Future<void> register(Owner owner, Dog dog) {
+    final ownerRef = ownerCollection.doc(owner.id);
+    final dogRef = dogCollection.doc(dog.id);
+    final recordRef = recordCollection.doc(dog.id);
+
+    final batch = db.batch();
 
     batch.set(ownerRef, owner.toMap());
     batch.set(dogRef, dog.toMap());
-    batch.set(recordRef, Record.fromNull().toMap());
+    batch.set(recordRef, Record.fromNull(dog.id).toMap());
 
     return batch.commit();
   }

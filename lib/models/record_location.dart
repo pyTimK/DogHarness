@@ -1,12 +1,12 @@
 class RecordLocation {
   RecordLocation({
-    this.id,
+    required this.id,
     required this.latitude,
     required this.longitude,
     required this.altitude,
   });
 
-  String? id;
+  String id;
   double latitude;
   double longitude;
   double altitude;

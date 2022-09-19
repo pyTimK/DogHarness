@@ -53,7 +53,7 @@ abstract class MyStyles {
   static final MaterialColor dark700Swatch = MaterialColor(dark.value, _dark700Map);
 
   // Input decoration
-  static myInputDecoration(String label) => InputDecoration(
+  static InputDecoration myInputDecoration(String label) => InputDecoration(
         labelText: label,
         enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -72,6 +72,7 @@ abstract class MyStyles {
           borderSide: BorderSide(color: MyStyles.red, width: 1),
         ),
         labelStyle: MyStyles.h2,
+        errorStyle: const TextStyle(color: MyStyles.red, fontSize: 12),
       );
 
   static const backgroundGradient = LinearGradient(

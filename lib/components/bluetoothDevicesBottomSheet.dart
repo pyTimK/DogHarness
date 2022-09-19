@@ -1,4 +1,4 @@
-import 'package:bluetooth_app_test/change_notifiers/bluetoothData.dart';
+import 'package:bluetooth_app_test/change_notifiers/bluetooth_data.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';

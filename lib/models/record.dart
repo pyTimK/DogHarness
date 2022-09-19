@@ -1,20 +1,19 @@
 class Record {
   Record({
-    this.id,
+    required this.id,
     required this.numSteps,
     required this.numDistance,
     required this.avePulse,
     required this.aveBreath,
   });
 
-  Record.fromNull()
-      : id = null,
-        numSteps = 0,
+  Record.fromNull(this.id)
+      : numSteps = 0,
         numDistance = 0,
         avePulse = 0,
         aveBreath = 0;
 
-  String? id;
+  String id;
   int numSteps;
   int numDistance;
   int avePulse;
