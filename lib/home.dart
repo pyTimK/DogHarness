@@ -1,8 +1,10 @@
 import 'package:bluetooth_app_test/change_notifiers/bluetooth_data.dart';
 import 'package:bluetooth_app_test/components/bluetoothDevicesBottomSheet.dart';
+import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/functions/my_show_bottom_sheet.dart';
 import 'package:bluetooth_app_test/functions/utils.dart';
 import 'package:bluetooth_app_test/logger.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:provider/provider.dart';

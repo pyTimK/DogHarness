@@ -1,30 +1,28 @@
 import 'package:bluetooth_app_test/change_notifiers/bluetooth_data.dart';
-import 'package:bluetooth_app_test/change_notifiers/account_data.dart';
-import 'package:bluetooth_app_test/change_notifiers/registration_data.dart';
-import 'package:bluetooth_app_test/home.dart';
-import 'package:bluetooth_app_test/main.dart';
+import 'package:bluetooth_app_test/pages/error.dart';
 import 'package:bluetooth_app_test/pages/home.dart';
+import 'package:bluetooth_app_test/pages/loading.dart';
 import 'package:bluetooth_app_test/pages/login.dart';
 import 'package:bluetooth_app_test/pages/register.dart';
 import 'package:bluetooth_app_test/pages/verify_email.dart';
-import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
+import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
-import 'package:provider/provider.dart';
+import 'package:provider/provider.dart' as old_provider;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Wrapper extends StatefulWidget {
+class Wrapper extends ConsumerStatefulWidget {
   const Wrapper({super.key});
 
   @override
-  State<Wrapper> createState() => _WrapperState();
+  WrapperState createState() => WrapperState();
 }
 
-class _WrapperState extends State<Wrapper> {
+class WrapperState extends ConsumerState<Wrapper> {
   FlutterBlue flutterBlue = FlutterBlue.instance;
   BluetoothState bluetoothState = BluetoothState.unknown;
-  User? user;
 
   //init
   @override
@@ -36,18 +34,12 @@ class _WrapperState extends State<Wrapper> {
         bluetoothState = state;
       });
     });
-
-    FirebaseAuth.instance.userChanges().listen((User? user) {
-      setState(() {
-        this.user = user;
-      });
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ChangeNotifierProvider(
+      body: old_provider.ChangeNotifierProvider(
         create: (parentContext) => BluetoothData(),
         child: ConstrainedBox(
           constraints: BoxConstraints(
@@ -58,38 +50,53 @@ class _WrapperState extends State<Wrapper> {
               gradient: MyStyles.backgroundGradient,
             ),
             child: ListView(
-              // shrinkWrap: true,
-              // physics: const BouncingScrollPhysics(),
-              children: [
-                user == null
-                    ? const LogInPage()
-                    : Provider.value(
-                        value: user!,
-                        child: !user!.emailVerified
-                            ? const VerifyEmailPage()
-                            : ChangeNotifierProvider(
-                                create: (context) => RegistrationData(user!.uid),
-                                builder: (context, child) {
-                                  var registrationData = Provider.of<RegistrationData>(context);
-                                  if (registrationData.isRegistered == null) {
-                                    return const Center(child: CircularProgressIndicator());
-                                  }
-
-                                  if (!registrationData.isRegistered!) {
-                                    return const RegisterPage();
-                                  }
-
-                                  return MultiProvider(providers: [
-                                    ChangeNotifierProvider(create: (context) => AccountData(user!.uid)),
-                                  ], builder: (context, child) => const HomePage());
-                                },
-                              ),
-                      )
-              ],
+              children: const [_VerifyUser()],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+class _VerifyUser extends ConsumerWidget {
+  const _VerifyUser();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<User?> user = ref.watch(nullableUserProvider);
+    return user.when(
+      loading: () => const LoadingPage(),
+      error: (error, stackTrace) => ErrorPage(error),
+      data: (user) {
+        if (user == null) {
+          return const LogInPage();
+        }
+        if (!user.emailVerified) {
+          return const VerifyEmailPage();
+        }
+        return const _VerifyUserRegistration();
+      },
+    );
+  }
+}
+
+class _VerifyUserRegistration extends ConsumerWidget {
+  const _VerifyUserRegistration();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AsyncValue<bool> isUserRegistered = ref.watch(isUserRegisteredProvider);
+
+    return isUserRegistered.when(
+      loading: () => const LoadingPage(),
+      error: (error, stackTrace) => ErrorPage(error),
+      data: (isUserRegistered) {
+        if (!isUserRegistered) {
+          return const RegisterPage();
+        }
+
+        return const HomePage();
+      },
     );
   }
 }

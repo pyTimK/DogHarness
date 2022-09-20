@@ -12,5 +12,6 @@ abstract class StorageService {
 }
 
 abstract class StorageNames {
-  static const String steps = "steps";
+  static const steps = "steps";
+  static const defaultDate = "defaultDate";
 }

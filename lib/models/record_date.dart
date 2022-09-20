@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class RecordDate {
-  RecordDate({
+  const RecordDate({
     required this.id,
     required this.numSteps,
     required this.numDistance,
@@ -7,11 +10,27 @@ class RecordDate {
     required this.aveBreath,
   });
 
-  String id;
-  int numSteps;
-  int numDistance;
-  int avePulse;
-  int aveBreath;
+  final String id;
+  final int numSteps;
+  final int numDistance;
+  final int avePulse;
+  final int aveBreath;
+
+  RecordDate copyWith({
+    String? id,
+    int? numSteps,
+    int? numDistance,
+    int? avePulse,
+    int? aveBreath,
+  }) {
+    return RecordDate(
+      id: id ?? this.id,
+      numSteps: numSteps ?? this.numSteps,
+      numDistance: numDistance ?? this.numDistance,
+      avePulse: avePulse ?? this.avePulse,
+      aveBreath: aveBreath ?? this.aveBreath,
+    );
+  }
 
   factory RecordDate.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {

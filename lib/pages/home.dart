@@ -1,75 +1,63 @@
-import 'package:bluetooth_app_test/change_notifiers/account_data.dart';
+import 'package:bluetooth_app_test/components/dayRows.dart';
+import 'package:bluetooth_app_test/components/defaultDatePicker.dart';
+import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
-import 'package:bluetooth_app_test/logger.dart';
+import 'package:bluetooth_app_test/components/myDogDropdown.dart';
+import 'package:bluetooth_app_test/helpers/date_helper.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
+import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends ConsumerState<HomePage> {
+  static const horizontalPadding = 20.0;
+  final _dogDropdownController = MyDogDropdownController();
   @override
   Widget build(BuildContext context) {
-    final accountData = Provider.of<AccountData>(context);
-    var owner = accountData.owner;
-    var dog = accountData.defaultDog;
-    var dogs = accountData.dogs;
-    logger.wtf(dog);
-    logger.wtf(dogs);
+    var owner = ref.watch(ownerProvider).value;
+    var dogs = ref.watch(dogsProvider).value;
+    var defaultDog = ref.watch(defaultDogProvider).value;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+      padding: const EdgeInsets.symmetric(horizontal: HomePageState.horizontalPadding, vertical: 30),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MyCircleAvatar.owner(owner),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              MyCircleAvatar.owner(owner),
+              const DefaultDatePicker(),
+            ],
+          ),
           const SizedBox(height: 20),
           Text("Hi ${owner?.nickname ?? ""}", style: MyStyles.h1),
           const SizedBox(height: 3),
           //TODO: make quote dynamic
           const Text("Dog is God spelled backward.", style: MyStyles.p),
           const SizedBox(height: 25),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                  // side: const BorderSide(color: MyStyles.dark),
-                ),
-                child: DropdownButton<Dog>(
-                  items: dogs
-                      .map((dog) => DropdownMenuItem<Dog>(
-                            value: dog,
-                            child: Row(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  child: MyCircleAvatar.dog(dog, radius: 16),
-                                ),
-                                Text(dog.name, style: MyStyles.h3),
-                              ],
-                            ),
-                          ))
-                      .toList(),
-                  value: dog,
-                  onChanged: (Dog? dog) {},
-                  dropdownColor: MyStyles.white,
-                  elevation: 3,
-                  borderRadius: const BorderRadius.all(Radius.circular(10)),
-                  underline: const SizedBox(),
-                ),
-              ),
-            ],
+          Align(
+            alignment: Alignment.centerRight,
+            child: MyDogDropdown(controller: _dogDropdownController),
+          ),
+          const SizedBox(height: 35),
+          const DayRows(),
+
+          MyButton.outlineShrink(
+            label: "Sign Out",
+            onPressed: () {
+              FirebaseAuth.instance.signOut();
+            },
           )
         ],
       ),

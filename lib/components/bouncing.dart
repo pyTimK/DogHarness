@@ -19,6 +19,7 @@ class Bouncing extends StatefulWidget {
 class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> scaleAnimation;
+  var hasMoved = false;
   @override
   void initState() {
     super.initState();
@@ -38,19 +39,24 @@ class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
-        _controller.forward();
+        hasMoved = false;
+        _controller.forward().then((_) => _controller.reverse());
       },
       onPointerUp: (PointerUpEvent event) {
-        _controller.reverse();
-        widget.onPress();
+        if (!hasMoved) {
+          widget.onPress();
+        }
+      },
+      onPointerMove: (PointerMoveEvent event) {
+        hasMoved = true;
       },
       child: Transform.scale(
         scale: scaleAnimation.value,

@@ -71,7 +71,6 @@ class BluetoothData extends ChangeNotifier {
     if (connectedDevice == null) {
       return;
     }
-    logger.wtf("dito");
 
     List<BluetoothService> awaitedServices = await services;
 

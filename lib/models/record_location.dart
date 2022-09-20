@@ -1,15 +1,32 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class RecordLocation {
-  RecordLocation({
+  const RecordLocation({
     required this.id,
     required this.latitude,
     required this.longitude,
     required this.altitude,
   });
 
-  String id;
-  double latitude;
-  double longitude;
-  double altitude;
+  final String id;
+  final double latitude;
+  final double longitude;
+  final double altitude;
+
+  RecordLocation copyWith({
+    String? id,
+    double? latitude,
+    double? longitude,
+    double? altitude,
+  }) {
+    return RecordLocation(
+      id: id ?? this.id,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      altitude: altitude ?? this.altitude,
+    );
+  }
 
   factory RecordLocation.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {

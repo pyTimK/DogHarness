@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
+@immutable
 class DogBreed {
   const DogBreed.aspin() : _name = "Aspin";
   const DogBreed.dobermanPinscher() : _name = "Doberman Pinscher";
@@ -37,6 +39,7 @@ class DogBreed {
   String toString() => _name;
 }
 
+@immutable
 class DogSize {
   const DogSize.standard() : _name = "Standard";
   const DogSize.small() : _name = "Small";
@@ -62,8 +65,9 @@ class DogSize {
   String toString() => _name;
 }
 
+@immutable
 class Dog {
-  Dog({
+  const Dog({
     required this.id,
     required this.name,
     this.photoUrl,
@@ -74,14 +78,37 @@ class Dog {
     this.humanIds = const [],
   });
 
-  String id;
-  String name;
-  String? photoUrl;
-  DogBreed breed;
-  DogSize size;
-  DateTime birthday;
-  String ownerId;
-  List<String> humanIds;
+  final String id;
+  final String name;
+  final String? photoUrl;
+  final DogBreed breed;
+  final DogSize size;
+  final DateTime birthday;
+  final String ownerId;
+  final List<String> humanIds;
+
+  static const _invalidPhotoUrl_ = '_invalidPhotoUrl_';
+  Dog copyWith({
+    String? id,
+    String? name,
+    String? photoUrl = _invalidPhotoUrl_,
+    DogBreed? breed,
+    DogSize? size,
+    DateTime? birthday,
+    String? ownerId,
+    List<String>? humanIds,
+  }) {
+    return Dog(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      photoUrl: photoUrl == _invalidPhotoUrl_ ? this.photoUrl : photoUrl,
+      breed: breed ?? this.breed,
+      size: size ?? this.size,
+      birthday: birthday ?? this.birthday,
+      ownerId: ownerId ?? this.ownerId,
+      humanIds: humanIds ?? this.humanIds,
+    );
+  }
 
   factory Dog.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {

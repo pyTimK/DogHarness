@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class Owner {
-  Owner({
+  const Owner({
     required this.id,
     required this.nickname,
     required this.email,
@@ -8,12 +11,31 @@ class Owner {
     required this.defaultDogId,
   });
 
-  String id;
-  String nickname;
-  String email;
-  String? photoUrl;
-  List<String> dogIds;
-  String defaultDogId;
+  final String id;
+  final String nickname;
+  final String email;
+  final String? photoUrl;
+  final List<String> dogIds;
+  final String defaultDogId;
+
+  static const _invalidPhotoUrl_ = '_invalidPhotoUrl_';
+  Owner copyWith({
+    String? id,
+    String? nickname,
+    String? email,
+    String? photoUrl = _invalidPhotoUrl_,
+    List<String>? dogIds,
+    String? defaultDogId,
+  }) {
+    return Owner(
+      id: id ?? this.id,
+      nickname: nickname ?? this.nickname,
+      email: email ?? this.email,
+      photoUrl: photoUrl == _invalidPhotoUrl_ ? this.photoUrl : photoUrl,
+      dogIds: dogIds ?? this.dogIds,
+      defaultDogId: defaultDogId ?? this.defaultDogId,
+    );
+  }
 
   factory Owner.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {

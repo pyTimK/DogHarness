@@ -1,33 +1,28 @@
-import 'dart:io';
-import 'package:bluetooth_app_test/change_notifiers/registration_data.dart';
-import 'package:bluetooth_app_test/components/myAlertDialog.dart';
 import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myDayInput.dart';
 import 'package:bluetooth_app_test/components/myDropdown.dart';
 import 'package:bluetooth_app_test/components/myEditableAvatar.dart';
-import 'package:bluetooth_app_test/components/withEditButton.dart';
 import 'package:bluetooth_app_test/enums/button_state.dart';
-import 'package:bluetooth_app_test/functions/capture_image.dart';
-import 'package:bluetooth_app_test/functions/pick_image.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
+import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 
-class RegisterPage extends StatefulWidget {
+class RegisterPage extends ConsumerStatefulWidget {
   const RegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  RegisterPageState createState() => RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class RegisterPageState extends ConsumerState<RegisterPage> {
   final _ownerNicknameController = TextEditingController();
   final _dogNameController = TextEditingController();
   final _dogBreedController = MyDropdownController<DogBreed>();
@@ -51,8 +46,8 @@ class _RegisterPageState extends State<RegisterPage> {
     //TODO
   }
 
-  _register(User user, RegistrationData registrationData) async {
-    if (_formKey.currentState!.validate()) {
+  _register(User? user) async {
+    if (_formKey.currentState!.validate() && user != null) {
       logger.i("Registering user ${user.uid}...");
       _setContinueButtonLoading(ButtonState.loading);
       try {
@@ -93,7 +88,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
         // Save Owner and Dog
         await CloudFirestoreService.register(owner, dog);
-        registrationData.isRegistered = true;
+        ref.read(isUserRegisteredProvider.notifier).setIsUserRegistered(true);
         logger.i("Registered user ${user.uid}...");
       } catch (e) {
         logger.e(e);
@@ -111,8 +106,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: false);
-    final registrationData = Provider.of<RegistrationData>(context, listen: false);
+    final user = ref.watch(nullableUserProvider).value;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
@@ -224,7 +218,7 @@ class _RegisterPageState extends State<RegisterPage> {
             MyButton(
               label: "CONTINUE",
               state: _continueButtonState,
-              onPressed: () => _register(user, registrationData),
+              onPressed: () => _register(user),
             ),
           ],
         ),

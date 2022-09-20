@@ -1,5 +1,8 @@
+import 'package:flutter/material.dart';
+
+@immutable
 class Record {
-  Record({
+  const Record({
     required this.id,
     required this.numSteps,
     required this.numDistance,
@@ -7,17 +10,33 @@ class Record {
     required this.aveBreath,
   });
 
-  Record.fromNull(this.id)
+  const Record.fromNull(this.id)
       : numSteps = 0,
         numDistance = 0,
         avePulse = 0,
         aveBreath = 0;
 
-  String id;
-  int numSteps;
-  int numDistance;
-  int avePulse;
-  int aveBreath;
+  final String id;
+  final int numSteps;
+  final int numDistance;
+  final int avePulse;
+  final int aveBreath;
+
+  Record copyWith({
+    String? id,
+    int? numSteps,
+    int? numDistance,
+    int? avePulse,
+    int? aveBreath,
+  }) {
+    return Record(
+      id: id ?? this.id,
+      numSteps: numSteps ?? this.numSteps,
+      numDistance: numDistance ?? this.numDistance,
+      avePulse: avePulse ?? this.avePulse,
+      aveBreath: aveBreath ?? this.aveBreath,
+    );
+  }
 
   factory Record.fromMap(Map<String, dynamic> data, String documentId) {
     if (data.isEmpty) {
