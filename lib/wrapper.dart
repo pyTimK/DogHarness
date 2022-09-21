@@ -1,8 +1,9 @@
 import 'package:bluetooth_app_test/change_notifiers/bluetooth_data.dart';
 import 'package:bluetooth_app_test/pages/error.dart';
-import 'package:bluetooth_app_test/pages/home.dart';
+import 'package:bluetooth_app_test/pages/mainPages/home.dart';
 import 'package:bluetooth_app_test/pages/loading.dart';
 import 'package:bluetooth_app_test/pages/login.dart';
+import 'package:bluetooth_app_test/pages/mainPages/mainPagesWrapper.dart';
 import 'package:bluetooth_app_test/pages/register.dart';
 import 'package:bluetooth_app_test/pages/verify_email.dart';
 import 'package:bluetooth_app_test/providers.dart';
@@ -38,23 +39,9 @@ class WrapperState extends ConsumerState<Wrapper> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: old_provider.ChangeNotifierProvider(
-        create: (parentContext) => BluetoothData(),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(
-            minHeight: MediaQuery.of(context).size.height,
-          ),
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: MyStyles.backgroundGradient,
-            ),
-            child: ListView(
-              children: const [_VerifyUser()],
-            ),
-          ),
-        ),
-      ),
+    return old_provider.ChangeNotifierProvider(
+      create: (parentContext) => BluetoothData(),
+      child: const _VerifyUser(),
     );
   }
 }
@@ -64,7 +51,7 @@ class _VerifyUser extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    AsyncValue<User?> user = ref.watch(nullableUserProvider);
+    AsyncValue<User?> user = ref.watch(userProvider);
     return user.when(
       loading: () => const LoadingPage(),
       error: (error, stackTrace) => ErrorPage(error),
@@ -95,7 +82,7 @@ class _VerifyUserRegistration extends ConsumerWidget {
           return const RegisterPage();
         }
 
-        return const HomePage();
+        return const MainPagesWrapper();
       },
     );
   }

@@ -1,6 +1,6 @@
 import 'package:bluetooth_app_test/components/bouncing.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
-import 'package:bluetooth_app_test/pages/home.dart';
+import 'package:bluetooth_app_test/pages/mainPages/home.dart';
 import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';
@@ -30,14 +30,13 @@ class DayRowsState extends ConsumerState<DayRows> {
       if (newDate.value != null) {
         final day = newDate.value!.day;
         final screenWidth = MediaQuery.of(context).size.width;
+        var scrollPosition =
+            (day - 1) * (cardWidth + dividerWidth) - screenWidth / 2 + HomePageState.horizontalPadding + cardWidth / 2;
+
+        scrollPosition = math.max(0, scrollPosition);
 
         _scrollController.animateTo(
-          math.max(
-              (day - 1) * (cardWidth + dividerWidth) -
-                  screenWidth / 2 +
-                  HomePageState.horizontalPadding +
-                  cardWidth / 2,
-              0),
+          scrollPosition,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );

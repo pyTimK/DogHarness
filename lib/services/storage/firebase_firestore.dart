@@ -6,20 +6,20 @@ import 'package:bluetooth_app_test/models/record_location.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 abstract class CloudFirestoreService {
-  static final db = FirebaseFirestore.instance;
-  static final ownerCollection = db.collection("owner");
-  static final dogCollection = db.collection("dog");
-  static final recordCollection = db.collection("record");
+  static final _db = FirebaseFirestore.instance;
+  static final _ownerCollection = _db.collection("owner");
+  static final _dogCollection = _db.collection("dog");
+  static final _recordCollection = _db.collection("record");
 
   static CollectionReference<Map<String, dynamic>> dateCollection(String recordId) =>
-      recordCollection.doc(recordId).collection("date");
+      _recordCollection.doc(recordId).collection("date");
   static CollectionReference<Map<String, dynamic>> timeCollection(String recordId, String dateId) =>
       dateCollection(recordId).doc(dateId).collection("time");
 
   //! Owner
   static Future<String> addOwner(Owner owner, {DocumentReference? doc}) async {
     if (doc == null) {
-      final docRef = await ownerCollection.add(owner.toMap());
+      final docRef = await _ownerCollection.add(owner.toMap());
       return docRef.id;
     }
 
@@ -28,43 +28,41 @@ abstract class CloudFirestoreService {
   }
 
   static Future<void> updateOwner(Owner owner) async {
-    await ownerCollection.doc(owner.id).update(owner.toMap());
+    await _ownerCollection.doc(owner.id).update(owner.toMap());
   }
 
   static Future<void> deleteOwner(Owner owner) async {
-    await ownerCollection.doc(owner.id).delete();
+    await _ownerCollection.doc(owner.id).delete();
   }
 
   static Future<bool> ownerExists(String uid) async {
     // final doc = await FirebaseFirestore.instance.collection("owner").doc(uid).get();
-    final doc = await ownerCollection.doc(uid).get();
+    final doc = await _ownerCollection.doc(uid).get();
     return doc.exists;
   }
 
-  static Future<Owner?> getOwner(String ownerId) async {
-    final doc = await ownerCollection.doc(ownerId).get();
-    if (doc.exists && doc.data() != null) {
-      return Owner.fromMap(doc.data()!, doc.id);
-    }
-    return null;
+  static Stream<Owner> getOwner(String id) {
+    return _ownerCollection.doc(id).snapshots().map((snapshot) {
+      return Owner.fromMap(snapshot.data()!, snapshot.id);
+    });
   }
 
   //! Dog
   static Future<String> addDog(Dog dog) async {
-    final docRef = await dogCollection.add(dog.toMap());
+    final docRef = await _dogCollection.add(dog.toMap());
     return docRef.id;
   }
 
   static Future<void> updateDog(Dog dog) async {
-    await dogCollection.doc(dog.id).update(dog.toMap());
+    await _dogCollection.doc(dog.id).update(dog.toMap());
   }
 
   static Future<void> deleteDog(Dog dog) async {
-    await dogCollection.doc(dog.id).delete();
+    await _dogCollection.doc(dog.id).delete();
   }
 
   static Future<Dog?> getDog(String dogId) async {
-    final doc = await dogCollection.doc(dogId).get();
+    final doc = await _dogCollection.doc(dogId).get();
     if (doc.exists && doc.data() != null) {
       return Dog.fromMap(doc.data()!, doc.id);
     }
@@ -84,12 +82,12 @@ abstract class CloudFirestoreService {
 
   //! Record
   static Future<String> addRecord(Record record) async {
-    final docRef = await recordCollection.add(record.toMap());
+    final docRef = await _recordCollection.add(record.toMap());
     return docRef.id;
   }
 
   static Future<void> updateRecord(Record record) async {
-    await recordCollection.doc(record.id).update(record.toMap());
+    await _recordCollection.doc(record.id).update(record.toMap());
   }
 
   static Future<void> deleteRecord(Record record) async {
@@ -102,11 +100,11 @@ abstract class CloudFirestoreService {
         }
       }
     });
-    await recordCollection.doc(record.id).delete();
+    await _recordCollection.doc(record.id).delete();
   }
 
   static Future<Record?> getRecord(String recordId) async {
-    final doc = await recordCollection.doc(recordId).get();
+    final doc = await _recordCollection.doc(recordId).get();
     if (doc.exists && doc.data() != null) {
       return Record.fromMap(doc.data()!, doc.id);
     }
@@ -162,6 +160,15 @@ abstract class CloudFirestoreService {
     return null;
   }
 
+  static Future<List<RecordLocation>> getRecordLocations(String recordId, String recordDateId) async {
+    final locations = <RecordLocation>[];
+    final snapshot = await timeCollection(recordId, recordDateId).get();
+    for (final doc in snapshot.docs) {
+      locations.add(RecordLocation.fromMap(doc.data(), doc.id));
+    }
+    return locations;
+  }
+
   //? Get owner in stream
   // static Stream<Owner> getOwner(String id) {
   //   return ownerCollection.doc(id).snapshots().map((snapshot) {
@@ -176,15 +183,15 @@ abstract class CloudFirestoreService {
   //   });
   // }
 
-  static String get generateOwnerId => ownerCollection.doc().id;
-  static String get generateDogId => dogCollection.doc().id;
+  static String get generateOwnerId => _ownerCollection.doc().id;
+  static String get generateDogId => _dogCollection.doc().id;
 
   static Future<void> register(Owner owner, Dog dog) {
-    final ownerRef = ownerCollection.doc(owner.id);
-    final dogRef = dogCollection.doc(dog.id);
-    final recordRef = recordCollection.doc(dog.id);
+    final ownerRef = _ownerCollection.doc(owner.id);
+    final dogRef = _dogCollection.doc(dog.id);
+    final recordRef = _recordCollection.doc(dog.id);
 
-    final batch = db.batch();
+    final batch = _db.batch();
 
     batch.set(ownerRef, owner.toMap());
     batch.set(dogRef, dog.toMap());

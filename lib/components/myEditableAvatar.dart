@@ -10,9 +10,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MyEditableAvatar extends StatefulWidget {
-  const MyEditableAvatar({required this.controller, required this.defaultImage, super.key});
+  const MyEditableAvatar(
+      {required this.controller, required this.defaultImage, this.radius = 50, this.onChanged, super.key});
   final MyEditableAvatarController controller;
   final Widget defaultImage;
+  final double radius;
+  final Function(File)? onChanged;
 
   @override
   State<MyEditableAvatar> createState() => _MyEditableAvatarState();
@@ -25,6 +28,7 @@ class _MyEditableAvatarState extends State<MyEditableAvatar> {
     final image = await getImage();
     widget.controller.value = image;
     if (image != null && mounted) {
+      widget.onChanged?.call(image);
       Navigator.pop(context);
       setState(() {
         _value = image;
@@ -65,6 +69,7 @@ class _MyEditableAvatarState extends State<MyEditableAvatar> {
   Widget build(BuildContext context) {
     return WithEditButton(
       onEdit: () => _openChangePictureDialog(isOwner: false),
+      radius: widget.radius,
       child: _value == null ? widget.defaultImage : Image.file(_value!, fit: BoxFit.cover),
     );
   }

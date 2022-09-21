@@ -1,4 +1,5 @@
 import 'package:bluetooth_app_test/components/myButtons.dart';
+import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/constants.dart';
 import 'package:bluetooth_app_test/functions/is_email.dart';
 import 'package:bluetooth_app_test/styles.dart';
@@ -84,18 +85,16 @@ class _LogInPageState extends State<LogInPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40),
-      child: Column(
+    return PageLayout(
+      child: PageScrollLayout(
+        padding: const EdgeInsets.symmetric(horizontal: 40),
         children: [
-          Transform.translate(
-            offset: const Offset(0, -20),
-            child: Image.asset(
-              "assets/icon/icon-transparent.png",
-              height: 176,
-            ),
+          const SizedBox(height: 70),
+          Image.asset(
+            "assets/icon/icon-transparent.png",
+            height: 176,
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 30),
           const Text(Constants.appName, style: MyStyles.h1),
           const SizedBox(height: 5),
           const Text("Welcome Dog Lover!", style: MyStyles.p),
@@ -107,6 +106,7 @@ class _LogInPageState extends State<LogInPage> {
                 TextFormField(
                   controller: _emailController,
                   decoration: MyStyles.myInputDecoration("Email"),
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   style: MyStyles.h2,
                   validator: (String? value) {
                     if (value == null || value.isEmpty) {
@@ -124,6 +124,7 @@ class _LogInPageState extends State<LogInPage> {
                 TextFormField(
                   //TODO: Dont show password plain text
                   controller: _passwordController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   decoration: MyStyles.myInputDecoration("Password"),
                   style: MyStyles.h2,
                   validator: (String? value) {
@@ -208,6 +209,7 @@ class _LogInPageState extends State<LogInPage> {
               });
             },
           ),
+          const SizedBox(height: 50),
         ],
       ),
     );

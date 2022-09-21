@@ -2,6 +2,7 @@ import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myDayInput.dart';
 import 'package:bluetooth_app_test/components/myDropdown.dart';
 import 'package:bluetooth_app_test/components/myEditableAvatar.dart';
+import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/enums/button_state.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
@@ -106,15 +107,15 @@ class RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(nullableUserProvider).value;
+    final user = ref.watch(userProvider).value;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+    return Form(
+      key: _formKey,
+      child: PageLayout(
+        child: PageScrollLayout(
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
           children: [
+            const SizedBox(height: 30),
             const Text("Tell us about both of you", style: MyStyles.h1),
             const Text("Please fill in the following details.", style: MyStyles.p),
             const SizedBox(height: 50),

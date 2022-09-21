@@ -1,5 +1,6 @@
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -25,7 +26,7 @@ class MyCircleAvatar extends StatelessWidget {
       }
       return CircleAvatar(
         radius: radius,
-        backgroundImage: NetworkImage(owner!.photoUrl!),
+        backgroundImage: CachedNetworkImageProvider(owner!.photoUrl!),
       );
     }
 
@@ -36,7 +37,7 @@ class MyCircleAvatar extends StatelessWidget {
 
     return CircleAvatar(
       radius: radius,
-      backgroundImage: NetworkImage(dog!.photoUrl!),
+      backgroundImage: CachedNetworkImageProvider(dog!.photoUrl!),
     );
   }
 }

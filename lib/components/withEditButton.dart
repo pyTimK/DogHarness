@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WithEditButton extends StatefulWidget {
-  const WithEditButton({required this.child, required this.onEdit, super.key});
+  const WithEditButton({required this.child, required this.onEdit, this.radius = 50, super.key});
   final Widget child;
   final VoidCallback onEdit;
+  final double radius;
 
   @override
   State<WithEditButton> createState() => _WithEditButtonState();
@@ -18,7 +19,7 @@ class _WithEditButtonState extends State<WithEditButton> {
       children: [
         ClipOval(
           child: SizedBox.fromSize(
-            size: const Size.fromRadius(50), // Image radius
+            size: Size.fromRadius(widget.radius), // Image radius
             child: widget.child,
           ),
         ),

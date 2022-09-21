@@ -50,7 +50,9 @@ dependencies:
   firebase_storage: ^10.3.8
   image_picker: ^0.8.5+3
   loading_animation_widget: ^1.2.0+3
-  flutter_riverpod: ^1.0.4
+  flutter_riverpod: ^2.0.0-dev.9
+  cached_network_image: ^3.2.2
+  blobs: ^2.0.0
 
 dev_dependencies:
   flutter_test:

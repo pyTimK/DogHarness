@@ -1,4 +1,5 @@
 import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
@@ -30,7 +31,7 @@ class MyDogDropdownState extends ConsumerState<MyDogDropdown> {
   @override
   Widget build(BuildContext context) {
     var dogs = ref.watch(dogsProvider).value;
-    var defaultDog = ref.watch(defaultDogProvider).value;
+    var defaultDog = ref.watch(defaultDogProvider);
 
     return Card(
       elevation: 2,

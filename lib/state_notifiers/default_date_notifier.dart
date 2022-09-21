@@ -19,4 +19,9 @@ class DefaultDateNotifier extends StateNotifier<AsyncValue<DateTime>> {
     state = AsyncValue.data(defaultDate);
     SharedPreferencesService().setString(StorageNames.defaultDate, defaultDate.toIso8601String());
   }
+
+  void resetDefaultDate() {
+    state = AsyncValue.data(DateTime.now().toLocal());
+    SharedPreferencesService().remove(StorageNames.defaultDate);
+  }
 }

@@ -19,4 +19,9 @@ abstract class FirebaseStorageService {
     await ref.putFile(image);
     return await ref.getDownloadURL();
   }
+
+  static Future<void> deleteImage({required String id, isOwner = true}) async {
+    final ref = isOwner ? _ownerImageRef(id) : _dogImageRef(id);
+    await ref.delete();
+  }
 }

@@ -9,12 +9,16 @@ class IsUserRegisteredNotifier extends StateNotifier<AsyncValue<bool>> {
 
   Future<void> _init(User? user) async {
     if (user == null) {
-      state = const AsyncValue.data(false);
+      if (mounted) {
+        state = const AsyncValue.data(false);
+      }
       return;
     }
 
     final exists = await CloudFirestoreService.ownerExists(user.uid);
-    state = AsyncValue.data(exists);
+    if (mounted) {
+      state = AsyncValue.data(exists);
+    }
   }
 
   void setIsUserRegistered(bool isUserRegistered) {
