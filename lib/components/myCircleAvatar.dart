@@ -1,3 +1,4 @@
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -22,7 +23,7 @@ class MyCircleAvatar extends StatelessWidget {
     //isOwner
     if (isOwner) {
       if (owner?.photoUrl == null) {
-        return SvgPicture.asset('assets/svg/owner-empty-avatar.svg', height: 60);
+        return SvgPicture.asset('assets/svg/owner-empty-avatar.svg', height: radius * 2);
       }
       return CircleAvatar(
         radius: radius,
@@ -32,7 +33,7 @@ class MyCircleAvatar extends StatelessWidget {
 
     // isDog
     if (dog?.photoUrl == null) {
-      return SvgPicture.asset('assets/svg/dog-empty-avatar.svg', height: 60);
+      return SvgPicture.asset('assets/svg/dog-empty-avatar.svg', height: radius * 2);
     }
 
     return CircleAvatar(

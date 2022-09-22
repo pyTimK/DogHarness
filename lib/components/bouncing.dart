@@ -25,10 +25,10 @@ class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 150),
     );
 
-    scaleAnimation = Tween(begin: 1.0, end: 0.8).animate(
+    scaleAnimation = Tween(begin: 1.0, end: 0.85).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
@@ -57,6 +57,7 @@ class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin
       },
       onPointerMove: (PointerMoveEvent event) {
         hasMoved = true;
+        _controller.reset();
       },
       child: Transform.scale(
         scale: scaleAnimation.value,

@@ -1,5 +1,6 @@
 import 'package:bluetooth_app_test/components/bouncing.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/pages/mainPages/home.dart';
 import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
@@ -15,32 +16,42 @@ class DayRows extends ConsumerStatefulWidget {
 }
 
 class DayRowsState extends ConsumerState<DayRows> {
-  final ScrollController _scrollController = new ScrollController();
+  final _scrollController = ScrollController();
   static const cardWidth = 50.0;
   static const dividerWidth = 35.0;
 
   _onDateCardPress(DateTime date) {
-    ref.read(defaultDateProvider.notifier).setDefaultDate(date);
+    ref.read(defaultDateProvider.notifier).state = date;
+  }
+
+  _updateScroll(DateTime date) {
+    final day = date.day;
+    final screenWidth = MediaQuery.of(context).size.width;
+    var scrollPosition =
+        (day - 1) * (cardWidth + dividerWidth) - screenWidth / 2 + HomePageState.horizontalPadding + cardWidth / 2;
+
+    scrollPosition = math.max(0, scrollPosition);
+
+    _scrollController.animateTo(
+      scrollPosition,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _updateScroll(ref.read(defaultDateProvider));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    DateTime? defaultDate = ref.watch(defaultDateProvider).value;
+    DateTime defaultDate = ref.watch(defaultDateProvider);
     ref.listen(defaultDateProvider, (oldDate, newDate) {
-      if (newDate.value != null) {
-        final day = newDate.value!.day;
-        final screenWidth = MediaQuery.of(context).size.width;
-        var scrollPosition =
-            (day - 1) * (cardWidth + dividerWidth) - screenWidth / 2 + HomePageState.horizontalPadding + cardWidth / 2;
-
-        scrollPosition = math.max(0, scrollPosition);
-
-        _scrollController.animateTo(
-          scrollPosition,
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-      }
+      _updateScroll(newDate);
     });
     return SizedBox(
       height: 60,

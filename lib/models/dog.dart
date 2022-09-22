@@ -41,8 +41,11 @@ class DogBreed {
 
 @immutable
 class DogSize {
-  const DogSize.standard() : _name = "Standard";
-  const DogSize.small() : _name = "Small";
+  static const standardStr = "Standard";
+  static const smallStr = "Small";
+
+  const DogSize.standard() : _name = standardStr;
+  const DogSize.small() : _name = smallStr;
   final String _name;
 
   static List<DogSize> all = const [
@@ -52,9 +55,9 @@ class DogSize {
 
   factory DogSize.fromString(String name) {
     switch (name) {
-      case "Standard":
+      case standardStr:
         return const DogSize.standard();
-      case "Small":
+      case smallStr:
         return const DogSize.small();
       default:
         return const DogSize.standard();
@@ -63,10 +66,13 @@ class DogSize {
 
   @override
   String toString() => _name;
+
+  bool get isStandard => _name == standardStr;
 }
 
 @immutable
 class Dog {
+  static const stepLengthMeters = 0.67056;
   const Dog({
     required this.id,
     required this.name,
@@ -117,7 +123,7 @@ class Dog {
     return Dog(
       id: documentId,
       name: data['name'] ?? '',
-      photoUrl: data['photoUrl'] ?? '',
+      photoUrl: data['photoUrl'],
       breed: DogBreed.fromString(data['breed'] ?? ''),
       size: DogSize.fromString(data['size'] ?? ''),
       birthday: (data['birthday'] as Timestamp).toDate(),

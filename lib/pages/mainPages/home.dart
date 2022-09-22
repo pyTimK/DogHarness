@@ -1,3 +1,5 @@
+import 'package:bluetooth_app_test/classes/step_status.dart';
+import 'package:bluetooth_app_test/components/boxData.dart';
 import 'package:bluetooth_app_test/components/dayRows.dart';
 import 'package:bluetooth_app_test/components/defaultDatePicker.dart';
 import 'package:bluetooth_app_test/components/myButtons.dart';
@@ -7,6 +9,7 @@ import 'package:bluetooth_app_test/components/myEditableAvatar.dart';
 import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/functions/signout.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
@@ -35,6 +38,8 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
     var owner = ref.watch(ownerProvider).value;
     var dogs = ref.watch(dogsProvider).value;
     var defaultDog = ref.watch(defaultDogProvider);
+    var recordDate = ref.watch(recordDateProvider).value;
+    bool hasRecordDate = recordDate != null && recordDate.hasData;
 
     return PageScrollLayout(
       padding: const EdgeInsets.symmetric(horizontal: HomePageState.horizontalPadding, vertical: 60),
@@ -60,19 +65,42 @@ class HomePageState extends ConsumerState<HomePage> with AutomaticKeepAliveClien
         ),
         const SizedBox(height: 35),
         const DayRows(),
-        Row(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width * .40,
-              child: Column(
-                children: const [
-                  Text("a"),
+        if (defaultDog != null && hasRecordDate)
+          Column(
+            children: [
+              const SizedBox(height: 45),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BoxData(
+                    recordDate.stepStatus,
+                    onPress: () {},
+                  ),
+                  const SizedBox(width: 25),
+                  BoxData(
+                    recordDate.pulseStatus(defaultDog),
+                    onPress: () {},
+                  ),
                 ],
               ),
-            ),
-          ],
-        ),
-        ..._noData(),
+              const SizedBox(height: 25),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  BoxData(
+                    recordDate.breathStatus,
+                    onPress: () {},
+                  ),
+                  const SizedBox(width: 25),
+                  BoxData(
+                    recordDate.distanceStatus,
+                    onPress: () {},
+                  ),
+                ],
+              ),
+            ],
+          ),
+        if (!hasRecordDate) ..._noData(),
       ],
     );
   }

@@ -87,6 +87,7 @@ class _LogInPageState extends State<LogInPage> {
   Widget build(BuildContext context) {
     return PageLayout(
       child: PageScrollLayout(
+        crossAxisAlignment: CrossAxisAlignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 40),
         children: [
           const SizedBox(height: 70),

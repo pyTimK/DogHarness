@@ -4,5 +4,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void signOut(WidgetRef ref) {
   FirebaseAuth.instance.signOut();
-  ref.read(defaultDateProvider.notifier).resetDefaultDate();
+  ref.invalidate(defaultDateProvider.notifier);
 }

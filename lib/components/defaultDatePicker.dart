@@ -9,17 +9,17 @@ class DefaultDatePicker extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    DateTime? date = ref.watch(defaultDateProvider).value;
+    DateTime date = ref.watch(defaultDateProvider);
 
     onTapHandler() async {
       var newDate = await showDatePicker(
         context: context,
-        initialDate: date ?? DateTime.now(),
+        initialDate: date,
         firstDate: DateTime(2010),
         lastDate: DateTime(2030),
       );
       if (newDate != null) {
-        ref.read(defaultDateProvider.notifier).setDefaultDate(newDate);
+        ref.read(defaultDateProvider.notifier).state = newDate;
       }
     }
 

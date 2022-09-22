@@ -1,10 +1,11 @@
+import 'package:bluetooth_app_test/helpers/date_helper.dart';
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
 import 'package:bluetooth_app_test/models/record.dart';
 import 'package:bluetooth_app_test/models/record_date.dart';
 import 'package:bluetooth_app_test/models/record_location.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
-import 'package:bluetooth_app_test/state_notifiers/default_date_notifier.dart';
 import 'package:bluetooth_app_test/state_notifiers/is_user_registered_notifier.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +39,7 @@ final defaultDogProvider = Provider<Dog?>((ref) {
   final defaultDogId = ref.watch(ownerProvider.select((owner) => owner.value?.defaultDogId));
   final dogs = ref.watch(dogsProvider.select((dogs) => dogs.value));
 
-  if (defaultDogId == null || dogs == null) {
+  if (defaultDogId == null || dogs == null || !dogs.map((dog) => dog.id).contains(defaultDogId)) {
     return null;
   }
 
@@ -47,9 +48,9 @@ final defaultDogProvider = Provider<Dog?>((ref) {
 });
 
 //
-final defaultDateProvider = StateNotifierProvider<DefaultDateNotifier, AsyncValue<DateTime>>(
-  (ref) => DefaultDateNotifier(),
-);
+final defaultDateProvider = StateProvider<DateTime>((ref) {
+  return DateHelper.now;
+});
 
 //
 final recordProvider = FutureProvider<Record?>((ref) async {
@@ -66,13 +67,15 @@ final recordProvider = FutureProvider<Record?>((ref) async {
 //
 final recordDateProvider = FutureProvider<RecordDate?>((ref) async {
   final recordId = await ref.watch(recordProvider.selectAsync((record) => record?.id));
-  final DateTime defaultDate = ref.watch(defaultDateProvider).value ?? DateTime.now().toLocal();
+  final defaultDate = ref.watch(defaultDateProvider);
+  final dateString = DateHelper.toDateString(defaultDate);
 
+  logger.wtf(dateString);
   if (recordId == null) {
     return null;
   }
 
-  final recordDate = await CloudFirestoreService.getRecordDate(recordId, defaultDate.toIso8601String());
+  final recordDate = await CloudFirestoreService.getRecordDate(recordId, dateString);
   return recordDate;
 });
 

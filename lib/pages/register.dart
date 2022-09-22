@@ -7,10 +7,12 @@ import 'package:bluetooth_app_test/enums/button_state.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
+import 'package:bluetooth_app_test/models/record.dart';
 import 'package:bluetooth_app_test/providers.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:bluetooth_app_test/styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,39 +58,24 @@ class RegisterPageState extends ConsumerState<RegisterPage> {
         final ownerId = user.uid;
         final dogId = CloudFirestoreService.generateDogId;
 
-        final ownerAvatar = _ownerAvatarController.value;
-        final dogAvatar = _dogAvatarController.value;
-
-        logger.i("Owner Avatar is $ownerAvatar");
-        logger.i("Dog Avatar is $dogAvatar");
-
-        // Upload avatars
-        final ownerPhotoUrl = await FirebaseStorageService.uploadImage(id: ownerId, image: ownerAvatar);
-        final dogPhotoUrl = await FirebaseStorageService.uploadImage(id: dogId, image: dogAvatar, isOwner: false);
-
-        // Create Owner and Dog
-        final owner = Owner(
-          id: ownerId,
+        await CloudFirestoreService.registerOwner(
+          user: user,
+          ownerAvatar: _ownerAvatarController.value,
           nickname: _ownerNicknameController.text,
-          email: user.email!,
-          dogIds: [dogId],
           defaultDogId: dogId,
-          photoUrl: ownerPhotoUrl ?? user.photoURL,
         );
 
-        final dog = Dog(
+        await CloudFirestoreService.registerDog(
           id: dogId,
+          avatar: _dogAvatarController.value,
           name: _dogNameController.text,
           breed: _dogBreedController.value!,
           size: _dogSizeController.value!,
           birthday: _birthdayController.value!,
           ownerId: ownerId,
-          humanIds: [],
-          photoUrl: dogPhotoUrl,
         );
 
-        // Save Owner and Dog
-        await CloudFirestoreService.register(owner, dog);
+        await CloudFirestoreService.setRecord(Record.fromNull(dogId));
         ref.read(isUserRegisteredProvider.notifier).setIsUserRegistered(true);
         logger.i("Registered user ${user.uid}...");
       } catch (e) {

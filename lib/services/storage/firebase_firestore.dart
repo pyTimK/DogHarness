@@ -1,9 +1,13 @@
+import 'dart:io';
+
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
 import 'package:bluetooth_app_test/models/record.dart';
 import 'package:bluetooth_app_test/models/record_date.dart';
 import 'package:bluetooth_app_test/models/record_location.dart';
+import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 abstract class CloudFirestoreService {
   static final _db = FirebaseFirestore.instance;
@@ -17,14 +21,13 @@ abstract class CloudFirestoreService {
       dateCollection(recordId).doc(dateId).collection("time");
 
   //! Owner
-  static Future<String> addOwner(Owner owner, {DocumentReference? doc}) async {
-    if (doc == null) {
-      final docRef = await _ownerCollection.add(owner.toMap());
-      return docRef.id;
-    }
+  static Future<String> addOwner(Owner owner) async {
+    final docRef = await _ownerCollection.add(owner.toMap());
+    return docRef.id;
+  }
 
-    await doc.set(owner.toMap());
-    return doc.id;
+  static Future<void> setOwner(Owner owner) async {
+    await _ownerCollection.doc(owner.id).set(owner.toMap());
   }
 
   static Future<void> updateOwner(Owner owner) async {
@@ -51,6 +54,10 @@ abstract class CloudFirestoreService {
   static Future<String> addDog(Dog dog) async {
     final docRef = await _dogCollection.add(dog.toMap());
     return docRef.id;
+  }
+
+  static Future<void> setDog(Dog dog) async {
+    await _dogCollection.doc(dog.id).set(dog.toMap());
   }
 
   static Future<void> updateDog(Dog dog) async {
@@ -86,6 +93,10 @@ abstract class CloudFirestoreService {
     return docRef.id;
   }
 
+  static Future<void> setRecord(Record record) async {
+    await _recordCollection.doc(record.id).set(record.toMap());
+  }
+
   static Future<void> updateRecord(Record record) async {
     await _recordCollection.doc(record.id).update(record.toMap());
   }
@@ -117,6 +128,10 @@ abstract class CloudFirestoreService {
     return docRef.id;
   }
 
+  static Future<void> setRecordDate(RecordDate recordDate, String recordId) async {
+    await dateCollection(recordId).doc(recordDate.id).set(recordDate.toMap());
+  }
+
   static Future<void> updateRecordDate(RecordDate recordDate, String recordId) async {
     await dateCollection(recordId).doc(recordDate.id).update(recordDate.toMap());
   }
@@ -144,6 +159,10 @@ abstract class CloudFirestoreService {
     return docRef.id;
   }
 
+  static Future<void> setRecordLocation(RecordLocation recordLocation, String recordId, String dateId) async {
+    await timeCollection(recordId, dateId).doc(recordLocation.id).set(recordLocation.toMap());
+  }
+
   static Future<void> updateRecordLocation(RecordLocation recordLocation, String recordId, String dateId) async {
     await timeCollection(recordId, dateId).doc(recordLocation.id).update(recordLocation.toMap());
   }
@@ -169,34 +188,56 @@ abstract class CloudFirestoreService {
     return locations;
   }
 
-  //? Get owner in stream
-  // static Stream<Owner> getOwner(String id) {
-  //   return ownerCollection.doc(id).snapshots().map((snapshot) {
-  //     return Owner.fromMap(snapshot.data()!, snapshot.id);
-  //   });
-  // }
-
-  //? Get all owners in stream
-  // static Stream<List<Owner>> owners() {
-  //   return ownerCollection.snapshots().map((snapshot) {
-  //     return snapshot.docs.map((doc) => Owner.fromMap(doc.data(), doc.id)).toList();
-  //   });
-  // }
-
-  static String get generateOwnerId => _ownerCollection.doc().id;
   static String get generateDogId => _dogCollection.doc().id;
 
-  static Future<void> register(Owner owner, Dog dog) {
-    final ownerRef = _ownerCollection.doc(owner.id);
-    final dogRef = _dogCollection.doc(dog.id);
-    final recordRef = _recordCollection.doc(dog.id);
+  static Future<void> registerDog({
+    required String id,
+    File? avatar,
+    required String name,
+    required DogBreed breed,
+    required DogSize size,
+    required DateTime birthday,
+    required String ownerId,
+  }) async {
+    // Upload avatar
+    final dogPhotoUrl = await FirebaseStorageService.uploadImage(id: id, image: avatar, isOwner: false);
 
-    final batch = _db.batch();
+    // Create Dog
+    final dog = Dog(
+      id: id,
+      name: name,
+      breed: breed,
+      size: size,
+      birthday: birthday,
+      ownerId: ownerId,
+      humanIds: const [],
+      photoUrl: dogPhotoUrl,
+    );
 
-    batch.set(ownerRef, owner.toMap());
-    batch.set(dogRef, dog.toMap());
-    batch.set(recordRef, Record.fromNull(dog.id).toMap());
+    // Save Dog
+    setDog(dog);
+  }
 
-    return batch.commit();
+  static Future<void> registerOwner({
+    required User user,
+    File? ownerAvatar,
+    required String nickname,
+    required String defaultDogId,
+  }) async {
+    // Upload avatar
+    final ownerPhotoUrl = await FirebaseStorageService.uploadImage(id: user.uid, image: ownerAvatar);
+
+    // Create Owner
+    final owner = Owner(
+      id: user.uid,
+      nickname: nickname,
+      email: user.email!,
+      dogIds: [defaultDogId],
+      defaultDogId: defaultDogId,
+      photoUrl: ownerPhotoUrl ?? user.photoURL,
+    );
+
+    // Save Owner
+    setOwner(owner);
   }
 }

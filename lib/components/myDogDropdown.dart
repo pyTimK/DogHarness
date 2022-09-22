@@ -2,6 +2,7 @@ import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,16 +17,13 @@ class MyDogDropdown extends ConsumerStatefulWidget {
 }
 
 class MyDogDropdownState extends ConsumerState<MyDogDropdown> {
-  Dog? _value;
+  _setValue(Dog? dog) async {
+    final owner = ref.read(ownerProvider).value;
+    if (owner == null) return;
 
-  _setValue(Dog? value) {
-    widget.onChanged?.call(value);
-    widget.controller.value = value;
-    if (value != null) {
-      setState(() {
-        _value = value;
-      });
-    }
+    widget.onChanged?.call(dog);
+    widget.controller.value = dog;
+    await CloudFirestoreService.updateOwner(owner.copyWith(defaultDogId: dog?.id));
   }
 
   @override

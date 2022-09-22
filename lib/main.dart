@@ -1,5 +1,5 @@
 import 'package:bluetooth_app_test/firebase_options.dart';
-import 'package:bluetooth_app_test/logger.dart';
+import 'package:bluetooth_app_test/pages/pushedPages/addDog.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:bluetooth_app_test/wrapper.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -29,6 +29,9 @@ class MyApp extends StatelessWidget {
       ),
       home: const Wrapper(),
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/addDog': (context) => const AddDogPage(),
+      },
     );
   }
 }
