@@ -12,7 +12,7 @@ class BoxData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Bouncing(
-      onPress: onPress,
+      onPressed: onPress,
       child: Container(
         width: MediaQuery.of(context).size.width * .40,
         height: MediaQuery.of(context).size.width * .40,

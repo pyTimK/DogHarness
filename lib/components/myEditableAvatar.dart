@@ -11,11 +11,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class MyEditableAvatar extends StatefulWidget {
   const MyEditableAvatar(
-      {required this.controller, required this.defaultImage, this.radius = 50, this.onChanged, super.key});
+      {required this.controller,
+      required this.defaultImage,
+      this.radius = 50,
+      this.onChanged,
+      this.isEditable = true,
+      super.key});
   final MyEditableAvatarController controller;
   final Widget defaultImage;
   final double radius;
   final Function(File)? onChanged;
+  final bool isEditable;
 
   @override
   State<MyEditableAvatar> createState() => _MyEditableAvatarState();
@@ -70,6 +76,7 @@ class _MyEditableAvatarState extends State<MyEditableAvatar> {
     return WithEditButton(
       onEdit: () => _openChangePictureDialog(isOwner: false),
       radius: widget.radius,
+      isEditable: widget.isEditable,
       child: _value == null ? widget.defaultImage : Image.file(_value!, fit: BoxFit.cover),
     );
   }

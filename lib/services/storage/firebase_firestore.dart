@@ -44,7 +44,13 @@ abstract class CloudFirestoreService {
     return doc.exists;
   }
 
-  static Stream<Owner> getOwner(String id) {
+  static Future<Owner?> getOwner(String uid) async {
+    final doc = await _ownerCollection.doc(uid).get();
+    if (!doc.exists) return null;
+    return Owner.fromMap(doc.data()!, doc.id);
+  }
+
+  static Stream<Owner> getOwnerStream(String id) {
     return _ownerCollection.doc(id).snapshots().map((snapshot) {
       return Owner.fromMap(snapshot.data()!, snapshot.id);
     });
@@ -85,6 +91,35 @@ abstract class CloudFirestoreService {
       }
     }
     return dogs;
+  }
+
+  static Stream<List<Dog>> getDogsStream(List<String> dogIds) {
+    return _dogCollection.where(FieldPath.documentId, whereIn: dogIds).snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) => Dog.fromMap(doc.data(), doc.id)).toList();
+    });
+  }
+
+  static Future<List<Owner>> getHumanBuddies(Dog dog) async {
+    final buddies = <Owner>[];
+    for (final humanId in dog.humanIds) {
+      final human = await getOwner(humanId);
+      if (human != null) {
+        buddies.add(human);
+      }
+    }
+
+    return buddies;
+  }
+
+  static Future<void> addDogToOwner({required Owner owner, required String dogId}) async {
+    if (owner.dogIds.contains(dogId)) {
+      return;
+    }
+
+    final dog = await getDog(dogId);
+    if (dog == null) return;
+    await updateOwner(owner.copyWith(dogIds: [...owner.dogIds, dogId]));
+    await updateDog(dog.copyWith(humanIds: [...dog.humanIds, owner.id]));
   }
 
   //! Record

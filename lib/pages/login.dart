@@ -149,45 +149,6 @@ class _LogInPageState extends State<LogInPage> {
                     }
                   },
                 ),
-                // const SizedBox(height: 20),
-                // MyButton.outline(
-                //   label: "DONE WALKING",
-                //   onPressed: () {},
-                //   outlineColor: MyStyles.red,
-                //   labelColor: MyStyles.red,
-                // ),
-                // const SizedBox(height: 20),
-                // MyButton.shrink(
-                //   label: "Turn On",
-                //   onPressed: () {},
-                // ),
-                // const SizedBox(height: 20),
-                // MyButton.outlineShrink(
-                //   label: "Cancel",
-                //   onPressed: () {},
-                // ),
-                // const SizedBox(height: 20),
-                // MyButton.shrink(
-                //   label: "SIGN OUT",
-                //   onPressed: () {},
-                //   color: MyStyles.red,
-                // ),
-                // const SizedBox(height: 20),
-                // MyButton.shrink(
-                //   label: "ADD",
-                //   onPressed: () {},
-                //   color: MyStyles.green,
-                // ),
-                // const SizedBox(height: 20),
-                // MyButton.icon(
-                //   label: "SHARE DOG",
-                //   icon: SvgPicture.asset(
-                //     "assets/svg/share-outline.svg",
-                //     color: Colors.white,
-                //   ),
-                //   color: MyStyles.blue,
-                //   onPressed: () {},
-                // ),
               ],
             ),
           ),

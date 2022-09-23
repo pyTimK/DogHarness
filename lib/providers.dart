@@ -24,14 +24,14 @@ final isUserRegisteredProvider = StateNotifierProvider<IsUserRegisteredNotifier,
 final ownerProvider = StreamProvider<Owner>((ref) {
   final user = ref.watch(userProvider).value;
   if (user == null) return const Stream.empty();
-  return CloudFirestoreService.getOwner(user.uid);
+  return CloudFirestoreService.getOwnerStream(user.uid);
 });
 
 //
-final dogsProvider = FutureProvider<List<Dog>>((ref) async {
-  final dogIds = await ref.watch(ownerProvider.selectAsync((owner) => owner.dogIds));
-  final dogs = await CloudFirestoreService.getDogs(dogIds);
-  return dogs;
+final dogsProvider = StreamProvider<List<Dog>>((ref) {
+  final owner = ref.watch(ownerProvider).value;
+  if (owner == null) return const Stream.empty();
+  return CloudFirestoreService.getDogsStream(owner.dogIds);
 });
 
 //
@@ -50,6 +50,33 @@ final defaultDogProvider = Provider<Dog?>((ref) {
 //
 final defaultDateProvider = StateProvider<DateTime>((ref) {
   return DateHelper.now;
+});
+
+//
+final viewingDogProvider = StateProvider<Dog?>((ref) => null);
+
+//
+final viewingDogsOwnerProvider = FutureProvider<Owner?>((ref) {
+  final viewingDog = ref.watch(viewingDogProvider);
+  if (viewingDog == null) return null;
+  return CloudFirestoreService.getOwner(viewingDog.ownerId);
+});
+
+//
+final viewingDogsHumanBuddiesProvider = FutureProvider<List<Owner>>((ref) async {
+  final viewingDog = ref.watch(viewingDogProvider);
+  if (viewingDog == null) return const [];
+  return await CloudFirestoreService.getHumanBuddies(viewingDog);
+});
+
+//
+final viewingOwnerProvider = StateProvider<Owner?>((ref) => null);
+
+//
+final viewingOwnersDogsProvider = FutureProvider<List<Dog>>((ref) async {
+  final viewingOwner = ref.watch(viewingOwnerProvider);
+  if (viewingOwner == null) return const [];
+  return await CloudFirestoreService.getDogs(viewingOwner.dogIds);
 });
 
 //

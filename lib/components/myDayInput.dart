@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class MyDayInput extends StatefulWidget {
-  const MyDayInput({required this.controller, required this.validator, required this.label, super.key});
-  final MyDayInputController controller;
+  const MyDayInput(
+      {this.controller, required this.validator, required this.label, this.initialValue, this.onChanged, super.key});
+  final MyDayInputController? controller;
   final FormFieldValidator<DateTime> validator;
   final String label;
+  final DateTime? initialValue;
+  final ValueChanged<DateTime>? onChanged;
 
   @override
   State<MyDayInput> createState() => _MyDayInputState();
@@ -15,6 +18,12 @@ class MyDayInput extends StatefulWidget {
 
 class _MyDayInputState extends State<MyDayInput> {
   DateTime? _value;
+
+  @override
+  void initState() {
+    super.initState();
+    _value = widget.initialValue;
+  }
 
   _showDatePicker(FormFieldState<DateTime> field) {
     showDatePicker(
@@ -24,7 +33,8 @@ class _MyDayInputState extends State<MyDayInput> {
       lastDate: DateTime.now(),
     ).then((value) {
       if (value != null) {
-        widget.controller.value = value;
+        widget.controller?.value = value;
+        widget.onChanged?.call(value);
         field.didChange(value);
         setState(() {
           _value = value;

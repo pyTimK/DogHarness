@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class WithEditButton extends StatefulWidget {
-  const WithEditButton({required this.child, required this.onEdit, this.radius = 50, super.key});
+  const WithEditButton(
+      {required this.child, required this.onEdit, this.radius = 50, this.isEditable = true, super.key});
   final Widget child;
   final VoidCallback onEdit;
   final double radius;
+  final bool isEditable;
 
   @override
   State<WithEditButton> createState() => _WithEditButtonState();
@@ -23,10 +25,11 @@ class _WithEditButtonState extends State<WithEditButton> {
             child: widget.child,
           ),
         ),
-        GestureDetector(
-          onTap: widget.onEdit,
-          child: SvgPicture.asset("assets/svg/edit-avatar.svg"),
-        )
+        if (widget.isEditable)
+          GestureDetector(
+            onTap: widget.onEdit,
+            child: SvgPicture.asset("assets/svg/edit-avatar.svg"),
+          )
       ],
     );
   }

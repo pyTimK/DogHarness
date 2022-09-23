@@ -3,20 +3,22 @@ import 'package:flutter/material.dart';
 
 class MyDrowpdown<T> extends StatefulWidget {
   const MyDrowpdown({
-    required this.controller,
+    this.controller,
     required this.items,
     required this.hint,
     required this.label,
     required this.validator,
+    this.initialValue,
     this.onChanged,
     super.key,
   });
-  final MyDropdownController<T> controller;
+  final MyDropdownController<T>? controller;
   final List<DropdownMenuItem<T>> items;
   final String hint;
   final String label;
   final FormFieldValidator<T> validator;
-  final ValueChanged<T?>? onChanged;
+  final ValueChanged<T>? onChanged;
+  final T? initialValue;
 
   @override
   State<MyDrowpdown<T>> createState() => _MyDrowpdownState();
@@ -26,9 +28,9 @@ class _MyDrowpdownState<T> extends State<MyDrowpdown<T>> {
   T? _value;
 
   _setValue(T? value) {
-    widget.onChanged?.call(value);
-    widget.controller.value = value;
     if (value != null) {
+      widget.controller?.value = value;
+      widget.onChanged?.call(value);
       setState(() {
         _value = value;
       });
@@ -40,7 +42,7 @@ class _MyDrowpdownState<T> extends State<MyDrowpdown<T>> {
     return DropdownButtonFormField<T>(
       items: widget.items,
       onChanged: _setValue,
-      value: _value,
+      value: widget.initialValue,
       isExpanded: true,
       hint: Text(widget.hint, style: MyStyles.h2),
       borderRadius: BorderRadius.circular(10),

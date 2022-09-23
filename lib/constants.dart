@@ -6,4 +6,6 @@ abstract class Constants {
 
 abstract class RouteNames {
   static const String addDog = '/addDog';
+  static const String dogProfile = '/dogProfile';
+  static const String ownerProfile = '/ownerProfile';
 }

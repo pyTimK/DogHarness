@@ -69,7 +69,7 @@ class DayRowsState extends ConsumerState<DayRows> {
           return SizedBox(
             width: DayRowsState.cardWidth,
             child: Bouncing(
-              onPress: () => _onDateCardPress(date),
+              onPressed: () => _onDateCardPress(date),
               child: Card(
                 elevation: 2,
                 shape: RoundedRectangleBorder(

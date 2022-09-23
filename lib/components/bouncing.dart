@@ -5,12 +5,12 @@ import 'package:flutter/material.dart';
 class Bouncing extends StatefulWidget {
   const Bouncing({
     required this.child,
-    required this.onPress,
+    required this.onPressed,
     Key? key,
   }) : super(key: key);
 
   final Widget child;
-  final VoidCallback onPress;
+  final VoidCallback onPressed;
 
   @override
   State<Bouncing> createState() => _BouncingState();
@@ -52,7 +52,7 @@ class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin
       },
       onPointerUp: (PointerUpEvent event) {
         if (!hasMoved) {
-          widget.onPress();
+          widget.onPressed();
         }
       },
       onPointerMove: (PointerMoveEvent event) {
