@@ -11,7 +11,7 @@ import 'package:bluetooth_app_test/functions/signout.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

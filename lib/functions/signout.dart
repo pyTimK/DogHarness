@@ -1,4 +1,4 @@
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

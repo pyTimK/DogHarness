@@ -9,7 +9,7 @@ class PushedPageLayout extends StatelessWidget {
       required this.children,
       this.mainAxisAlignment = MainAxisAlignment.start,
       this.crossAxisAlignment = CrossAxisAlignment.start,
-      this.padding = const EdgeInsets.symmetric(horizontal: 45, vertical: 60),
+      this.padding = const EdgeInsets.symmetric(horizontal: 15, vertical: 40),
       super.key});
   final String title;
   final List<Widget> children;
@@ -26,20 +26,24 @@ class PushedPageLayout extends StatelessWidget {
         padding: padding,
         children: [
           Stack(
-            alignment: Alignment.topLeft,
+            alignment: Alignment.centerLeft,
             clipBehavior: Clip.none,
             children: [
-              Transform.translate(
-                offset: const Offset(-40, -25),
-                child: IconButton(
-                  icon: const Icon(Icons.chevron_left_rounded, size: 50, color: MyStyles.dark),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
+              IconButton(
+                iconSize: 50,
+                icon: const Icon(Icons.chevron_left_rounded, color: MyStyles.dark),
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.all(0),
+                onPressed: () => Navigator.of(context).pop(),
               ),
               Center(child: Text(title, style: MyStyles.h1)),
             ],
           ),
-          ...children,
+          Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30),
+              child: Column(
+                children: children,
+              ))
         ],
       ),
     );

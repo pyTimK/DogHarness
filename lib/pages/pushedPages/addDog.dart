@@ -6,7 +6,7 @@ import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/enums/button_state.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/pages/pushedPages/pushedPageLayout.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:bluetooth_app_test/styles.dart';

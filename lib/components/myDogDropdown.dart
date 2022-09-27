@@ -1,7 +1,7 @@
 import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';

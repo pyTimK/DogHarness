@@ -5,7 +5,7 @@ import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/functions/signout.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/pages/login.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';

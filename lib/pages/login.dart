@@ -5,6 +5,7 @@ import 'package:bluetooth_app_test/functions/is_email.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -78,9 +79,21 @@ class _LogInPageState extends State<LogInPage> {
     }
   }
 
-  _signInWithGoogle() {
-    print("Sign in with Google");
-    //TODO: Sign in with Google
+  _signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override

@@ -6,7 +6,7 @@ import 'package:bluetooth_app_test/pages/login.dart';
 import 'package:bluetooth_app_test/pages/mainPages/mainPagesWrapper.dart';
 import 'package:bluetooth_app_test/pages/register.dart';
 import 'package:bluetooth_app_test/pages/verify_email.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

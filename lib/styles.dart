@@ -14,6 +14,12 @@ abstract class MyStyles {
     fontSize: 16,
     fontWeight: FontWeight.bold,
   );
+
+  static const TextStyle h2Regular = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w400,
+  );
+
   static const TextStyle h3 = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.bold,

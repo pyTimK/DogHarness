@@ -2,7 +2,7 @@ import 'package:bluetooth_app_test/components/bouncing.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/pages/mainPages/home.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;

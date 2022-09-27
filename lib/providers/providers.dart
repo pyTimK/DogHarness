@@ -117,3 +117,5 @@ final recordLocationProvider = FutureProvider<List<RecordLocation>>((ref) async 
   final recordLocation = await CloudFirestoreService.getRecordLocations(recordId, recordDateId);
   return recordLocation;
 });
+
+final walkingDogProvider = StateProvider<Dog?>((ref) => null);

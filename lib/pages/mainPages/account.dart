@@ -7,6 +7,7 @@ import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
 import 'package:bluetooth_app_test/components/myEditableAvatar.dart';
 import 'package:bluetooth_app_test/components/myListTiles.dart';
+import 'package:bluetooth_app_test/components/myText.dart';
 import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/components/rotatingBlobs.dart';
 import 'package:bluetooth_app_test/constants.dart';
@@ -16,7 +17,7 @@ import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/models/dog.dart';
 import 'package:bluetooth_app_test/models/owner.dart';
 import 'package:bluetooth_app_test/pages/pushedPages/ownerProfile.dart';
-import 'package:bluetooth_app_test/providers.dart';
+import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
 import 'package:bluetooth_app_test/services/storage/firebase_storage.dart';
 import 'package:bluetooth_app_test/styles.dart';
@@ -52,7 +53,7 @@ class AccountPageState extends ConsumerState<AccountPage> with AutomaticKeepAliv
       context: context,
       builder: (context) {
         return MyAlertDialog(children: [
-          const Text("Add a dog", style: MyStyles.h1),
+          const MyText.h1("Add a dog"),
           const SizedBox(height: 15),
           MyButton.outlineShrink(
               label: "CREATE A NEW PROFILE",
@@ -61,7 +62,7 @@ class AccountPageState extends ConsumerState<AccountPage> with AutomaticKeepAliv
                 Navigator.of(context).pushNamed(RouteNames.addDog);
               }),
           const SizedBox(height: 7),
-          const Text("OR", style: MyStyles.p),
+          const MyText("OR"),
           const SizedBox(height: 7),
           MyButton.outlineShrink(
               label: "ADD MY FRIEND'S DOG",
@@ -150,7 +151,7 @@ class AccountPageState extends ConsumerState<AccountPage> with AutomaticKeepAliv
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         const SizedBox(height: 50),
-        const Text("Profile", style: MyStyles.h1),
+        const MyText.h1("Profile"),
         const SizedBox(height: 30),
         OwnerProfile(owner: owner, dogs: dogs),
         const SizedBox(height: 30),

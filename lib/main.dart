@@ -1,5 +1,6 @@
 import 'package:bluetooth_app_test/constants.dart';
 import 'package:bluetooth_app_test/firebase_options.dart';
+import 'package:bluetooth_app_test/pages/pushedPages/about.dart';
 import 'package:bluetooth_app_test/pages/pushedPages/addDog.dart';
 import 'package:bluetooth_app_test/pages/pushedPages/dogProfile.dart';
 import 'package:bluetooth_app_test/pages/pushedPages/ownerProfile.dart';
@@ -36,6 +37,7 @@ class MyApp extends StatelessWidget {
         RouteNames.addDog: (context) => const AddDogPage(),
         RouteNames.dogProfile: (context) => const DogProfilePage(),
         RouteNames.ownerProfile: (context) => const OwnerProfilePage(),
+        RouteNames.about: (context) => const AboutPage(),
       },
     );
   }
