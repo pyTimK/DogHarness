@@ -107,8 +107,10 @@ class __BluetoothSettingsTileState extends ConsumerState<_BluetoothSettingsTile>
     // TODO: implement toggle bluetooth
     logger.wtf("newValue ${isConnected}");
     if (isConnected) {
+      ref.read(shouldListenProvider.notifier).state = true;
       await ref.read(connectedDeviceProvider.notifier).connect();
     } else {
+      ref.read(shouldListenProvider.notifier).state = false;
       await ref.read(connectedDeviceProvider.notifier).disconnect();
     }
     setState(() {

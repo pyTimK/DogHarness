@@ -8,8 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyDogDropdown extends ConsumerStatefulWidget {
-  const MyDogDropdown({required this.controller, this.onChanged, super.key});
-  final MyDogDropdownController controller;
+  const MyDogDropdown({this.controller, this.onChanged, super.key}) : assert(controller != null || onChanged != null);
+  final MyDogDropdownController? controller;
   final ValueChanged<Dog?>? onChanged;
 
   @override
@@ -22,8 +22,15 @@ class MyDogDropdownState extends ConsumerState<MyDogDropdown> {
     if (owner == null) return;
 
     widget.onChanged?.call(dog);
-    widget.controller.value = dog;
+    widget.controller?.value = dog;
     await CloudFirestoreService.updateOwner(owner.copyWith(defaultDogId: dog?.id));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    final defaultDog = ref.read(defaultDogProvider);
+    widget.controller?.value = defaultDog;
   }
 
   @override

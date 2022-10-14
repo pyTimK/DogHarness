@@ -37,6 +37,13 @@ class ConnectedDeviceNotifier extends StateNotifier<AsyncValue<BluetoothDevice?>
 
     try {
       await device.connect(autoConnect: false);
+      device.state.listen((event) async {
+        //! Warning: does not work
+        logger.d(event);
+        if (event == BluetoothDeviceState.disconnected) {
+          state = const AsyncValue.data(null);
+        }
+      });
       state = AsyncValue.data(device);
     } catch (e) {
       await device.disconnect();
@@ -46,13 +53,13 @@ class ConnectedDeviceNotifier extends StateNotifier<AsyncValue<BluetoothDevice?>
   }
 
   Future<void> disconnect() async {
+    state = const AsyncValue.data(null);
     var flutterBlue = FlutterBlue.instance;
     final connectedDevices = await flutterBlue.connectedDevices;
 
     for (var device in connectedDevices) {
       await device.disconnect();
     }
-    state = const AsyncValue.data(null);
 
     // var device = state.value;
 

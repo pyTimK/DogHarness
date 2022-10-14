@@ -25,3 +25,7 @@ String getFomrattedTime(DateTime datetime) {
 String getFormattedDate(DateTime datetime) {
   return DateFormat('dd/MM/yyyy').format(datetime);
 }
+
+int getNewAve(int oldAve, int oldNum, int newValue) {
+  return (oldAve * oldNum + newValue) ~/ (oldNum + 1);
+}

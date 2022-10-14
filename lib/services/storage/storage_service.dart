@@ -10,8 +10,3 @@ abstract class StorageService {
   Future<int> getInt(String key, {int defaultValue = 0});
   Future<void> remove(String key);
 }
-
-abstract class StorageNames {
-  static const steps = "steps";
-  static const defaultDate = "defaultDate";
-}

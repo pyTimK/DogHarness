@@ -12,25 +12,33 @@ class RecordDate {
     required this.id,
     required this.numSteps,
     required this.avePulse,
+    required this.numPulse,
     required this.aveBreath,
+    required this.numBreath,
   });
 
   final String id;
   final int numSteps;
   final int avePulse;
+  final int numPulse;
   final int aveBreath;
+  final int numBreath;
 
   RecordDate copyWith({
     String? id,
     int? numSteps,
     int? avePulse,
+    int? numPulse,
     int? aveBreath,
+    int? numBreath,
   }) {
     return RecordDate(
       id: id ?? this.id,
       numSteps: numSteps ?? this.numSteps,
       avePulse: avePulse ?? this.avePulse,
+      numPulse: numPulse ?? this.numPulse,
       aveBreath: aveBreath ?? this.aveBreath,
+      numBreath: numBreath ?? this.numBreath,
     );
   }
 
@@ -42,7 +50,9 @@ class RecordDate {
       id: documentId,
       numSteps: data['numSteps'] ?? 0,
       avePulse: data['avePulse'] ?? 0,
+      numPulse: data['numPulse'] ?? 0,
       aveBreath: data['aveBreath'] ?? 0,
+      numBreath: data['numBreath'] ?? 0,
     );
   }
 
@@ -50,7 +60,9 @@ class RecordDate {
     return {
       'numSteps': numSteps,
       'avePulse': avePulse,
+      'numPulse': numPulse,
       'aveBreath': aveBreath,
+      'numBreath': numBreath,
     };
   }
 

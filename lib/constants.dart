@@ -11,3 +11,16 @@ abstract class RouteNames {
   static const String ownerProfile = '/ownerProfile';
   static const String about = '/about';
 }
+
+abstract class StorageNames {
+  static const defaultDate = "defaultDate";
+  static const steps = "steps";
+  static const pulseAve = "pulseAve";
+  static const pulseNum = "pulseNum";
+}
+
+abstract class DataTypes {
+  static const String step = "STEP";
+  static const String pulse = "BPM";
+  static const String breath = "BREATH";
+}

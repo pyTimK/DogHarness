@@ -12,30 +12,40 @@ class Record {
     required this.id,
     required this.numSteps,
     required this.avePulse,
+    required this.numPulse,
     required this.aveBreath,
+    required this.numBreath,
   });
 
   const Record.fromNull(this.id)
       : numSteps = 0,
         avePulse = 0,
-        aveBreath = 0;
+        numPulse = 0,
+        aveBreath = 0,
+        numBreath = 0;
 
   final String id;
   final int numSteps;
   final int avePulse;
   final int aveBreath;
+  final int numPulse;
+  final int numBreath;
 
   Record copyWith({
     String? id,
     int? numSteps,
     int? avePulse,
+    int? numPulse,
     int? aveBreath,
+    int? numBreath,
   }) {
     return Record(
       id: id ?? this.id,
       numSteps: numSteps ?? this.numSteps,
       avePulse: avePulse ?? this.avePulse,
+      numPulse: numPulse ?? this.numPulse,
       aveBreath: aveBreath ?? this.aveBreath,
+      numBreath: numBreath ?? this.numBreath,
     );
   }
 
@@ -47,7 +57,9 @@ class Record {
       id: documentId,
       numSteps: data['numSteps'] ?? 0,
       avePulse: data['avePulse'] ?? 0,
+      numPulse: data['numPulse'] ?? 0,
       aveBreath: data['aveBreath'] ?? 0,
+      numBreath: data['numBreath'] ?? 0,
     );
   }
 
@@ -55,7 +67,9 @@ class Record {
     return {
       'numSteps': numSteps,
       'avePulse': avePulse,
+      'numPulse': numPulse,
       'aveBreath': aveBreath,
+      'numBreath': numBreath,
     };
   }
 

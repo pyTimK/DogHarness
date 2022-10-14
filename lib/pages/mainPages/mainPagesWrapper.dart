@@ -5,16 +5,18 @@ import 'package:bluetooth_app_test/pages/mainPages/home.dart';
 import 'package:bluetooth_app_test/pages/mainPages/location.dart';
 import 'package:bluetooth_app_test/pages/mainPages/play.dart';
 import 'package:bluetooth_app_test/pages/mainPages/settings.dart';
+import 'package:bluetooth_app_test/providers/bluetooth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class MainPagesWrapper extends StatefulWidget {
+class MainPagesWrapper extends ConsumerStatefulWidget {
   const MainPagesWrapper({super.key});
 
   @override
-  State<MainPagesWrapper> createState() => _MainPagesWrapperState();
+  MainPagesWrapperState createState() => MainPagesWrapperState();
 }
 
-class _MainPagesWrapperState extends State<MainPagesWrapper> {
+class MainPagesWrapperState extends ConsumerState<MainPagesWrapper> {
   late PageController _pageController;
 
   @override
@@ -30,6 +32,8 @@ class _MainPagesWrapperState extends State<MainPagesWrapper> {
   }
 
   void _onPageChange(int index) {
+    ref.read(isConnectAutomaticallyProvider.notifier).state = index == 2;
+
     setState(() {
       _pageController.jumpToPage(index);
     });
