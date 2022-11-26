@@ -17,6 +17,7 @@ abstract class StorageNames {
   static const steps = "steps";
   static const pulseAve = "pulseAve";
   static const pulseNum = "pulseNum";
+  static const breathPerMin = "breathPerMin";
 }
 
 abstract class DataTypes {

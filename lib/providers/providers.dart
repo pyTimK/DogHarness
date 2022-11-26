@@ -16,6 +16,16 @@ final userProvider = StreamProvider<User?>((ref) {
 });
 
 //
+final pulseAveProvider = StateProvider<int>((ref) {
+  return 0;
+});
+
+//
+final breathAveProvider = StateProvider<int>((ref) {
+  return 0;
+});
+
+//
 final isUserRegisteredProvider = StateNotifierProvider<IsUserRegisteredNotifier, AsyncValue<bool>>((ref) {
   final user = ref.watch(userProvider).value;
   return IsUserRegisteredNotifier(user);

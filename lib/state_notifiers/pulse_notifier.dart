@@ -15,14 +15,6 @@ class PulseNotifier extends StateNotifier<List<int>> {
   }
 
   Future<void> add(int value) async {
-    final pulseAve = await _storageService.getInt(StorageNames.pulseAve);
-    final pulseNum = await _storageService.getInt(StorageNames.pulseNum);
-    final pulseAveNew = getNewAve(pulseAve, pulseNum, value);
-    final pulseNumNew = pulseNum + 1;
-
-    await _storageService.setInt(StorageNames.pulseAve, pulseAveNew);
-    await _storageService.setInt(StorageNames.pulseNum, pulseNumNew);
-
     final pulseListNew = List<int>.from(state);
     // pulseListNew.add(value);
     // final pulseListNew = state;

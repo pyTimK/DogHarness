@@ -12,6 +12,7 @@ import 'package:bluetooth_app_test/constants.dart';
 import 'package:bluetooth_app_test/functions/steps_to_distance.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/providers/bluetooth.dart';
+import 'package:bluetooth_app_test/providers/breath.dart';
 import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/providers/pulse.dart';
 import 'package:bluetooth_app_test/providers/steps.dart';
@@ -127,9 +128,137 @@ class __MainPageState extends ConsumerState<_MainPage> {
         const SizedBox(height: 50),
         _Pulse(),
         const SizedBox(height: 50),
-        const LineChartSample10(),
+        _Breath(),
         const SizedBox(height: 50),
+        // const LineChartSample10(),
+        // const SizedBox(height: 50),
       ],
+    );
+  }
+}
+
+//! Breath
+class _Breath extends ConsumerStatefulWidget {
+  _Breath({super.key});
+  final interval = 20.0;
+
+  @override
+  _BreathState createState() => _BreathState();
+}
+
+class _BreathState extends ConsumerState<_Breath> {
+  Widget leftTitleWidgets(double value, TitleMeta meta) {
+    var style = MyStyles.p.copyWith(color: MyStyles.dark60);
+    return SideTitleWidget(
+      axisSide: meta.axisSide,
+      space: 16,
+      child: Text(meta.formattedValue, style: style),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var spots = ref.watch(breathProvider);
+    var breathAve = ref.watch(breathAveProvider);
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(15),
+        color: MyStyles.white,
+        border: Border.all(color: MyStyles.dark, width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 200,
+            child: LineChart(
+              LineChartData(
+                lineTouchData: LineTouchData(
+                  touchTooltipData: LineTouchTooltipData(
+                    maxContentWidth: 100,
+                    tooltipBgColor: MyStyles.white,
+                    tooltipBorder: const BorderSide(color: MyStyles.dark),
+                    getTooltipItems: (touchedSpots) {
+                      return touchedSpots.map((LineBarSpot touchedSpot) {
+                        final textStyle = TextStyle(
+                          color: touchedSpot.bar.gradient?.colors[0] ?? touchedSpot.bar.color,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        );
+                        return LineTooltipItem(
+                          '${touchedSpot.x}, ${touchedSpot.y.toStringAsFixed(2)}',
+                          textStyle,
+                        );
+                      }).toList();
+                    },
+                  ),
+                  handleBuiltInTouches: true,
+                  getTouchLineStart: (data, index) => 0,
+                ),
+                lineBarsData: [
+                  LineChartBarData(
+                    color: Colors.black,
+                    spots: spots.asMap().entries.map((e) => FlSpot(e.key.toDouble(), e.value.toDouble())).toList(),
+                    isCurved: true,
+                    isStrokeCapRound: true,
+                    barWidth: 3,
+                    belowBarData: BarAreaData(
+                      show: false,
+                    ),
+                    dotData: FlDotData(show: false),
+                  ),
+                ],
+                titlesData: FlTitlesData(
+                  leftTitles: AxisTitles(
+                    axisNameSize: 16,
+                    // axisNameWidget: const Padding(
+                    //   padding: EdgeInsets.only(bottom: 0),
+                    //   child: Text('BPM'),
+                    // ),
+                    sideTitles: SideTitles(
+                      showTitles: false,
+                      interval: widget.interval,
+                      getTitlesWidget: leftTitleWidgets,
+                      reservedSize: 45,
+                    ),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
+                minY: 5,
+                maxY: 18,
+                // maxY: (spots.reduce(math.max).toDouble() / widget.interval).ceil() * widget.interval + widget.interval,
+                minX: spots.length.toDouble() - 20,
+                maxX: spots.length.toDouble(),
+                clipData: FlClipData.all(),
+                gridData: FlGridData(
+                  show: true,
+                  drawVerticalLine: false,
+                  // horizontalInterval: 1.5,
+                  // verticalInterval: 5,
+                  // checkToShowHorizontalLine: (value) {
+                  //   return value.toInt() == 0;
+                  // },
+                  // checkToShowVerticalLine: (value) {
+                  //   return value.toInt() == 0;
+                  // },
+                ),
+                borderData: FlBorderData(show: false),
+              ),
+            ),
+          ),
+          const MyText.h2("Breath"),
+          MyText.p("$breathAve BPM"),
+        ],
+      ),
     );
   }
 }
@@ -156,6 +285,7 @@ class _PulseState extends ConsumerState<_Pulse> {
   @override
   Widget build(BuildContext context) {
     var spots = ref.watch(pulseProvider);
+    var pulseAve = ref.watch(pulseAveProvider);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 10),
       decoration: BoxDecoration(
@@ -251,6 +381,7 @@ class _PulseState extends ConsumerState<_Pulse> {
             ),
           ),
           const MyText.h2("Heartbeat"),
+          MyText.p("$pulseAve BPM"),
         ],
       ),
     );
