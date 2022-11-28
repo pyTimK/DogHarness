@@ -11,9 +11,6 @@ class BreathNotifier extends StateNotifier<List<int>> {
   BreathNotifier() : super([0]);
 
   Future<void> reset() async {
-    // localMaxima = 0;
-    // changeType = _ChangeType.rising;
-    // startingTime = null;
     await _storageService.setInt(StorageNames.breathPerMin, 0);
     state = [0];
   }

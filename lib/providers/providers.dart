@@ -26,6 +26,11 @@ final breathAveProvider = StateProvider<int>((ref) {
 });
 
 //
+final doneWalkingForTodayProvider = StateProvider<bool>((ref) {
+  return false;
+});
+
+//
 final isUserRegisteredProvider = StateNotifierProvider<IsUserRegisteredNotifier, AsyncValue<bool>>((ref) {
   final user = ref.watch(userProvider).value;
   return IsUserRegisteredNotifier(user);
@@ -106,8 +111,9 @@ final recordDateProvider = FutureProvider<RecordDate?>((ref) async {
   final recordId = await ref.watch(recordProvider.selectAsync((record) => record?.id));
   final defaultDate = ref.watch(defaultDateProvider);
   final dateString = DateHelper.toDateString(defaultDate);
+  ref.watch(doneWalkingForTodayProvider);
 
-  logger.wtf(dateString);
+  logger.wtf("dateString");
   if (recordId == null) {
     return null;
   }

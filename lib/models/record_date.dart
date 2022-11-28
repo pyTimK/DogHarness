@@ -17,6 +17,13 @@ class RecordDate {
     required this.numBreath,
   });
 
+  const RecordDate.fromNull(this.id)
+      : numSteps = 0,
+        avePulse = 0,
+        numPulse = 0,
+        aveBreath = 0,
+        numBreath = 0;
+
   final String id;
   final int numSteps;
   final int avePulse;

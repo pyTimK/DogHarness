@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +28,6 @@ String getFormattedDate(DateTime datetime) {
   return DateFormat('dd/MM/yyyy').format(datetime);
 }
 
-int getNewAve(int oldAve, int oldNum, int newValue) {
-  return (oldAve * oldNum + newValue) ~/ (oldNum + 1);
+int getNewAve(int oldAve, int oldNum, int newValue, {int newNum = 1}) {
+  return ((oldAve * oldNum) + (newValue * newNum)) ~/ max(oldNum + newNum, 1);
 }

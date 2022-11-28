@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
+import 'package:http/http.dart' as http;
 
 import 'package:app_settings/app_settings.dart';
+import 'package:bluetooth_app_test/classes/bluetooth_data.dart';
 import 'package:bluetooth_app_test/components/bluetoothIcon.dart';
 import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myCircleAvatar.dart';
@@ -10,12 +13,18 @@ import 'package:bluetooth_app_test/components/myText.dart';
 import 'package:bluetooth_app_test/components/pageLayout.dart';
 import 'package:bluetooth_app_test/constants.dart';
 import 'package:bluetooth_app_test/functions/steps_to_distance.dart';
+import 'package:bluetooth_app_test/functions/utils.dart';
+import 'package:bluetooth_app_test/helpers/date_helper.dart';
 import 'package:bluetooth_app_test/logger.dart';
+import 'package:bluetooth_app_test/models/record.dart';
+import 'package:bluetooth_app_test/models/record_date.dart';
 import 'package:bluetooth_app_test/providers/bluetooth.dart';
 import 'package:bluetooth_app_test/providers/breath.dart';
 import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:bluetooth_app_test/providers/pulse.dart';
 import 'package:bluetooth_app_test/providers/steps.dart';
+import 'package:bluetooth_app_test/services/storage/firebase_firestore.dart';
+import 'package:bluetooth_app_test/services/storage/shared_preferences_service.dart';
 import 'package:bluetooth_app_test/styles.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +32,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+
+final _storageService = SharedPreferencesService();
 
 class PlayPage extends ConsumerStatefulWidget {
   const PlayPage({super.key});
@@ -43,6 +54,9 @@ class PlayPageState extends ConsumerState<PlayPage> with AutomaticKeepAliveClien
     var bluetoothData = ref.watch(connectedDeviceProvider).value;
     var walkingDog = ref.watch(walkingDogProvider);
     var isListening = ref.watch(isListeningProvider).value ?? false;
+    var doneWalking = ref.watch(doneWalkingForTodayProvider);
+
+    if (doneWalking) return const _DoneWalking();
 
     bool isBluetoothOff = bluetoothState != BluetoothState.on;
 
@@ -132,6 +146,58 @@ class __MainPageState extends ConsumerState<_MainPage> {
         const SizedBox(height: 50),
         // const LineChartSample10(),
         // const SizedBox(height: 50),
+        MyButton.outline(
+          label: "DONE WALKING",
+          labelColor: MyStyles.red,
+          outlineColor: MyStyles.red,
+          onPressed: () async {
+            if (walkingDog == null) return;
+
+            //! Update Record
+            Record prevRecord = await CloudFirestoreService.getRecord(walkingDog.id) ?? Record.fromNull(walkingDog.id);
+
+            Record newRecord = Record(
+              id: walkingDog.id,
+              numSteps: prevRecord.numSteps + ref.read(stepProvider),
+              avePulse: getNewAve(
+                  prevRecord.avePulse, prevRecord.numPulse, await _storageService.getInt(StorageNames.pulseAve),
+                  newNum: await _storageService.getInt(StorageNames.pulseNum)),
+              numPulse: prevRecord.numPulse + await _storageService.getInt(StorageNames.pulseNum),
+              aveBreath: getNewAve(
+                  prevRecord.aveBreath, prevRecord.numBreath, await _storageService.getInt(StorageNames.breathPerMin)),
+              numBreath: prevRecord.numBreath + 1,
+            );
+
+            await CloudFirestoreService.setRecord(newRecord);
+
+            //! Update Record Date
+            String date = DateHelper.toDateString(DateTime.now());
+            RecordDate prevRecordDate =
+                await CloudFirestoreService.getRecordDate(walkingDog.id, date) ?? RecordDate.fromNull(walkingDog.id);
+
+            RecordDate newRecordDate = RecordDate(
+              id: date,
+              numSteps: prevRecordDate.numSteps + ref.read(stepProvider),
+              avePulse: getNewAve(
+                  prevRecordDate.avePulse, prevRecordDate.numPulse, await _storageService.getInt(StorageNames.pulseAve),
+                  newNum: await _storageService.getInt(StorageNames.pulseNum)),
+              numPulse: prevRecordDate.numPulse + await _storageService.getInt(StorageNames.pulseNum),
+              aveBreath: getNewAve(prevRecordDate.aveBreath, prevRecordDate.numBreath,
+                  await _storageService.getInt(StorageNames.breathPerMin)),
+              numBreath: prevRecord.numBreath + 1,
+            );
+
+            await CloudFirestoreService.setRecordDate(newRecordDate, walkingDog.id);
+
+            ref.read(stepProvider.notifier).reset();
+            ref.read(pulseProvider.notifier).reset();
+            ref.read(breathProvider.notifier).reset();
+            resetBreathingValues();
+
+            ref.read(doneWalkingForTodayProvider.notifier).state = true;
+            ref.read(walkingDogProvider.notifier).state = null;
+          },
+        ),
       ],
     );
   }
@@ -441,9 +507,17 @@ class _SelectWalkingDog extends ConsumerStatefulWidget {
 class _SelectWalkingDogState extends ConsumerState<_SelectWalkingDog> {
   final _dropdownController = MyDogDropdownController();
 
-  void selectWalkingDog() {
-    ref.read(walkingDogProvider.notifier).state = _dropdownController.value;
+  void selectWalkingDog() async {
+    final dog = _dropdownController.value;
+    if (dog == null) return;
+    ref.read(walkingDogProvider.notifier).state = dog;
     ref.read(shouldListenProvider.notifier).state = true;
+
+    final queryParameters = {
+      'dogId': dog.id,
+    };
+    final uri = Uri.https('dogtappserver.herokuapp.com', '/changeDogId', queryParameters);
+    final response = await http.post(uri);
   }
 
   @override
@@ -488,6 +562,32 @@ class _BluetoothDisabled extends StatelessWidget {
           const MyButton.shrink(
             label: "Turn On",
             onPressed: AppSettings.openBluetoothSettings,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DoneWalking extends ConsumerWidget {
+  const _DoneWalking({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Center(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const MyText.h1("You have walked your dog today!"),
+          const SizedBox(height: 25),
+          const MyText.p("Wanna walk again?"),
+          const SizedBox(height: 25),
+          MyButton.shrink(
+            label: "Walk",
+            onPressed: () {
+              ref.read(doneWalkingForTodayProvider.notifier).state = false;
+            },
           ),
         ],
       ),

@@ -93,6 +93,13 @@ int _lastDistance = 0;
 _ChangeType _changeType = _ChangeType.rising;
 DateTime? _startingTime;
 
+void resetBreathingValues() {
+  _localMaxima = 0;
+  _lastDistance = 0;
+  _changeType = _ChangeType.rising;
+  _startingTime = null;
+}
+
 class BreathBluetoothData implements BluetoothData {
   BreathBluetoothData(this.value);
 
@@ -117,6 +124,8 @@ class BreathBluetoothData implements BluetoothData {
         _localMaxima++;
         if (_startingTime == null) return;
         final minDiffMillis = max(DateTime.now().difference(_startingTime!).inMilliseconds, 1);
+        logger.wtf(_localMaxima);
+        logger.wtf(minDiffMillis / 60000);
         final breathPerMin = ((_localMaxima / minDiffMillis) * (1000 * 60)).round();
 
         await _storageService.setInt(StorageNames.breathPerMin, breathPerMin);
