@@ -18,7 +18,7 @@ abstract class CloudFirestoreService {
   static CollectionReference<Map<String, dynamic>> dateCollection(String recordId) =>
       _recordCollection.doc(recordId).collection("date");
   static CollectionReference<Map<String, dynamic>> timeCollection(String recordId, String dateId) =>
-      dateCollection(recordId).doc(dateId).collection("time");
+      dateCollection(recordId).doc(dateId).collection("location");
 
   //! Owner
   static Future<String> addOwner(Owner owner) async {

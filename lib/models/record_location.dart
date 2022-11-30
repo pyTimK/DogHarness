@@ -32,11 +32,12 @@ class RecordLocation {
     if (data.isEmpty) {
       throw Exception("No data");
     }
+
     return RecordLocation(
       id: documentId,
-      latitude: data['latitude'] ?? 0.0,
-      longitude: data['longitude'] ?? 0.0,
-      altitude: data['altitude'] ?? 0.0,
+      latitude: _checkDouble(data['latitude']) ?? 0.0,
+      longitude: _checkDouble(data['longitude']) ?? 0.0,
+      altitude: _checkDouble(data['altitude']) ?? 0.0,
     );
   }
 
@@ -47,4 +48,11 @@ class RecordLocation {
       'altitude': altitude,
     };
   }
+}
+
+double? _checkDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) return double.tryParse(value);
+  return null;
 }

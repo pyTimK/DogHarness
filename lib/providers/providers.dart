@@ -113,24 +113,33 @@ final recordDateProvider = FutureProvider<RecordDate?>((ref) async {
   final dateString = DateHelper.toDateString(defaultDate);
   ref.watch(doneWalkingForTodayProvider);
 
-  logger.wtf("dateString");
+  // logger.wtf("recordDateProvider ran");
   if (recordId == null) {
     return null;
   }
 
   final recordDate = await CloudFirestoreService.getRecordDate(recordId, dateString);
+  // logger.wtf("record.id: ${recordId}");
+  // logger.wtf("dateString: ${dateString}");
+  // logger.wtf("recordDate.id: ${recordDate?.id}");
   return recordDate;
 });
 
 //
 final recordLocationProvider = FutureProvider<List<RecordLocation>>((ref) async {
   final recordId = await ref.watch(recordProvider.selectAsync((record) => record?.id));
-  final recordDateId = await ref.watch(recordDateProvider.selectAsync((recordDate) => recordDate?.id));
+  final defaultDate = ref.watch(defaultDateProvider);
+  final dateString = DateHelper.toDateString(defaultDate);
+  // final recordDateId = await ref.watch(recordDateProvider.selectAsync((recordDate) => recordDate?.id));
 
-  if (recordId == null || recordDateId == null) {
+  if (recordId == null) {
     return [];
   }
-  final recordLocation = await CloudFirestoreService.getRecordLocations(recordId, recordDateId);
+
+  // logger.wtf("recordLocationProvider ran");
+  // logger.wtf(dateString);
+  final recordLocation = await CloudFirestoreService.getRecordLocations(recordId, dateString);
+  // logger.wtf(recordLocation);
   return recordLocation;
 });
 

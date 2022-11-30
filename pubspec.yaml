@@ -58,6 +58,7 @@ dependencies:
   avatar_glow: ^2.0.2
   fl_chart: ^0.55.2
   http: ^0.13.5
+  google_maps_flutter: ^2.2.1
 
 dev_dependencies:
   flutter_test:
