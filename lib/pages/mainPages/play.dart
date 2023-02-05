@@ -516,7 +516,7 @@ class _SelectWalkingDogState extends ConsumerState<_SelectWalkingDog> {
     final queryParameters = {
       'dogId': dog.id,
     };
-    final uri = Uri.https('dogtappserver.herokuapp.com', '/changeDogId', queryParameters);
+    final uri = Uri.https('late-pond-5613.fly.dev', '/changeDogId', queryParameters);
     final response = await http.post(uri);
   }
 

@@ -10,6 +10,7 @@ abstract class RouteNames {
   static const String dogProfile = '/dogProfile';
   static const String ownerProfile = '/ownerProfile';
   static const String about = '/about';
+  static const String gpsData = '/gpsData';
 }
 
 abstract class StorageNames {

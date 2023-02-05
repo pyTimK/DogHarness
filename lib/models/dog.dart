@@ -4,16 +4,16 @@ import 'package:flutter/material.dart';
 @immutable
 class DogBreed {
   const DogBreed.aspin() : _name = "Aspin";
-  const DogBreed.dobermanPinscher() : _name = "Doberman Pinscher";
-  const DogBreed.americanBulldog() : _name = "American Bulldog";
+  const DogBreed.siberianHusky() : _name = "SIberian Husky";
+  const DogBreed.borderCollie() : _name = "Border Collie";
   const DogBreed.beagle() : _name = "Beagle";
   const DogBreed.labrador() : _name = "Labrador";
   final String _name;
 
   static List<DogBreed> all = const [
     DogBreed.aspin(),
-    DogBreed.dobermanPinscher(),
-    DogBreed.americanBulldog(),
+    DogBreed.siberianHusky(),
+    DogBreed.borderCollie(),
     DogBreed.beagle(),
     DogBreed.labrador(),
   ];
@@ -22,10 +22,10 @@ class DogBreed {
     switch (name) {
       case "Aspin":
         return const DogBreed.aspin();
-      case "Doberman Pinscher":
-        return const DogBreed.dobermanPinscher();
-      case "American Bulldog":
-        return const DogBreed.americanBulldog();
+      case "SIberian Husky":
+        return const DogBreed.siberianHusky();
+      case "Border Collie":
+        return const DogBreed.borderCollie();
       case "Beagle":
         return const DogBreed.beagle();
       case "Labrador":

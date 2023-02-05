@@ -2,8 +2,10 @@ import 'dart:async';
 
 import 'package:bluetooth_app_test/components/dayRows.dart';
 import 'package:bluetooth_app_test/components/defaultDatePicker.dart';
+import 'package:bluetooth_app_test/components/myButtons.dart';
 import 'package:bluetooth_app_test/components/myDogDropdown.dart';
 import 'package:bluetooth_app_test/components/myText.dart';
+import 'package:bluetooth_app_test/constants.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/providers/providers.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +67,7 @@ class LocationPageState extends ConsumerState<LocationPage> with AutomaticKeepAl
 
     var recordLocation = ref.watch(recordLocationProvider).value ?? [];
 
-    logger.wtf(recordLocation);
+    // logger.wtf(recordLocation);
 
     Polyline polyline = Polyline(
       polylineId: const PolylineId("polyline"),
@@ -79,7 +81,7 @@ class LocationPageState extends ConsumerState<LocationPage> with AutomaticKeepAl
       body: Column(
         children: [
           Flexible(
-            flex: 2,
+            flex: 1,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -103,12 +105,27 @@ class LocationPageState extends ConsumerState<LocationPage> with AutomaticKeepAl
                   ),
                   const SizedBox(height: 35),
                   const DayRows(),
+                  const SizedBox(height: 20),
+                  Align(
+                    alignment: Alignment.center,
+                    child: MyButton.outlineShrink(
+                        label: "See Data",
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            RouteNames.gpsData,
+                            // arguments: {
+                            //   "date":
+                            // }
+                          );
+                        }),
+                  ),
                 ],
               ),
             ),
           ),
           Flexible(
-            flex: 3,
+            flex: 1,
             child: GoogleMap(
               mapType: MapType.normal,
               polylines: {polyline},

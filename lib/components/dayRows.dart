@@ -1,4 +1,5 @@
 import 'package:bluetooth_app_test/components/bouncing.dart';
+import 'package:bluetooth_app_test/functions/utils.dart';
 import 'package:bluetooth_app_test/helpers/date_helper.dart';
 import 'package:bluetooth_app_test/logger.dart';
 import 'package:bluetooth_app_test/pages/mainPages/home.dart';
@@ -21,6 +22,7 @@ class DayRowsState extends ConsumerState<DayRows> {
   static const dividerWidth = 35.0;
 
   _onDateCardPress(DateTime date) {
+    logger.wtf("PRESSED ${getFormattedDate(date)}");
     ref.read(defaultDateProvider.notifier).state = date;
   }
 

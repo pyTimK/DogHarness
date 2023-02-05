@@ -1,6 +1,9 @@
 /// This file contains the Bouncing widget which is used to
 /// provide the bouncing animation to a child widget.
+import 'package:bluetooth_app_test/logger.dart';
 import 'package:flutter/material.dart';
+
+var pointerMovedCount = 0;
 
 class Bouncing extends StatefulWidget {
   const Bouncing({
@@ -47,16 +50,22 @@ class _BouncingState extends State<Bouncing> with SingleTickerProviderStateMixin
   Widget build(BuildContext context) {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
+        // logger.wtf("pointerdown");
         hasMoved = false;
+        pointerMovedCount = 0;
         _controller.forward().then((_) => _controller.reverse());
       },
       onPointerUp: (PointerUpEvent event) {
+        // logger.wtf("pointerup");
+        // logger.wtf("hasMoved: $hasMoved");
         if (!hasMoved) {
           widget.onPressed();
         }
       },
       onPointerMove: (PointerMoveEvent event) {
-        hasMoved = true;
+        // logger.wtf("pointermove");
+        pointerMovedCount++;
+        hasMoved = pointerMovedCount > 30;
         _controller.reset();
       },
       child: Transform.scale(

@@ -12,10 +12,14 @@ class ConnectedDeviceNotifier extends StateNotifier<AsyncValue<BluetoothDevice?>
 
   void _init() async {
     final connectedDevices = await FlutterBlue.instance.connectedDevices;
+    logger.wtf("connectedDevices");
+    logger.wtf(connectedDevices);
+
     if (connectedDevices.isEmpty) {
       state = const AsyncValue.data(null);
       return;
     }
+
     final device = connectedDevices.firstWhere((device) => device.name == Constants.deviceName);
     state = AsyncValue.data(device);
   }

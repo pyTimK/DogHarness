@@ -9,6 +9,7 @@ class MyText extends StatelessWidget {
   const MyText(this.text, {this.color, super.key}) : style = MyStyles.p;
 
   const MyText.h1(this.text, {this.color, super.key}) : style = MyStyles.h1;
+  const MyText.h1UnBold(this.text, {this.color, super.key}) : style = MyStyles.h1UnBold;
 
   const MyText.h2(this.text, {this.color, super.key}) : style = MyStyles.h2;
 

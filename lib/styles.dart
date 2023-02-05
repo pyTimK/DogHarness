@@ -10,6 +10,12 @@ abstract class MyStyles {
     fontSize: 20,
     fontWeight: FontWeight.bold,
   );
+
+  static const TextStyle h1UnBold = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w400,
+  );
+
   static const TextStyle h2 = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.bold,
